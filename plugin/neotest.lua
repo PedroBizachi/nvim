@@ -1,7 +1,6 @@
 Config.on_event({ "BufReadPost", "BufNewFile" }, function()
 	local base_plugins = {
 		"https://github.com/nvim-neotest/neotest",
-		"https://github.com/antoinemadec/FixCursorHold.nvim",
 		"https://github.com/nvim-neotest/nvim-nio",
 		"https://github.com/nvim-lua/plenary.nvim",
 	}
