@@ -347,17 +347,6 @@ function M.apply()
 	-- set(0, "MiniFilesBorder", { fg = catppuccin.foreground, bg = nil    })
 	-- set(0, "MiniFilesNormal", { fg = catppuccin.foreground, bg = nil    })
 
-	-- === Statusline ===
-	-- Default is pretty good and productive, but let's try this
-	-- set(0, "MiniStatuslineModeNormal",  { fg = catppuccin.background, bg = catppuccin.color2, bold = true })
-	-- set(0, "MiniStatuslineModeInsert",  { fg = catppuccin.background, bg = catppuccin.color4, bold = true })
-	-- set(0, "MiniStatuslineModeVisual",  { fg = catppuccin.background, bg = catppuccin.color5, bold = true })
-	-- set(0, "MiniStatuslineModeReplace", { fg = catppuccin.background, bg = catppuccin.color1, bold = true })
-	-- set(0, "MiniStatuslineModeCommand", { fg = catppuccin.background, bg = catppuccin.color3, bold = true })
-	-- set(0, "MiniStatuslineModeOther",   { fg = catppuccin.foreground, bg = catppuccin.color0, bold = true })
-	-- local StatusLineNC = vim.api.nvim_get_hl(0, { name = "StatusLineNC" })
-	-- set(0, "MiniStatuslineFilename",    { fg = catppuccin.foreground, bg = StatusLineNC.bg,   bold = true })
-
 	-- === StartupTime ===
 	set(0, "StartupTimeStartupValue", { fg = monokai.yellow })
 

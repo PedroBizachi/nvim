@@ -42,8 +42,28 @@ Config.later(function()
 	local color = function(hl, text)
 		return string.format("%%#%s#%s%s", hl, text, statusline_devinfo_hl)
 	end
+	local bold_statusline_groups = function()
+		for _, group in ipairs({
+			"MiniStatuslineModeNormal",
+			"MiniStatuslineModeInsert",
+			"MiniStatuslineModeVisual",
+			"MiniStatuslineModeReplace",
+			"MiniStatuslineModeCommand",
+			"MiniStatuslineModeOther",
+			"MiniStatuslineDevinfo",
+			"MiniStatuslineFilename",
+			"MiniStatuslineFileinfo",
+			"MiniStatuslineInactive",
+		}) do
+			local hl = vim.api.nvim_get_hl(0, { name = group, link = false })
+			if next(hl) ~= nil then
+				vim.api.nvim_set_hl(0, group, vim.tbl_extend("force", hl, { bold = true }))
+			end
+		end
+	end
 	-- Set `use_icons` to true if you have a Nerd Font
 	statusline.setup({ use_icons = vim.g.have_nerd_font })
+	vim.schedule(bold_statusline_groups)
 
 	---@diagnostic disable-next-line: duplicate-set-field
 	statusline.section_git = function(args)
@@ -227,6 +247,8 @@ Config.later(function()
 		},
 	})
 
+	require("mini.tabline").setup()
 	require("mini.files").setup()
 	require("colors").apply()
+	bold_statusline_groups()
 end)
