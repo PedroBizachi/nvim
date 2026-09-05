@@ -1,3 +1,4 @@
+-- stylua: ignore start
 Config.on_filetype("python", function(ev)
 	vim.pack.add({ "https://github.com/linux-cultist/venv-selector.nvim" })
 
@@ -56,6 +57,26 @@ Config.later(function()
 	vim.pack.add({ "https://github.com/folke/flash.nvim" })
 	vim.pack.add({ "https://github.com/nvim-zh/colorful-winsep.nvim" })
 	vim.pack.add({ "https://github.com/atiladefreitas/dooing" })
+	vim.pack.add({ "https://github.com/chrisgrieser/nvim-chainsaw" })
+	vim.pack.add({ "https://github.com/wansmer/treesj" })
+	vim.pack.add({ "https://github.com/mawkler/modicator.nvim" })
+
+	local set = vim.keymap.set
+
+	require("chainsaw").setup()
+
+	local chainsaw = require("chainsaw")
+
+	set({ "n", "v", "x" }, "<leader>lv", function() chainsaw.variableLog() end, { desc = "Log variable" })
+	set({ "n", "v", "x" }, "<leader>lo", function() chainsaw.objectLog() end, { desc = "Log object" })
+	set({ "n", "v", "x" }, "<leader>lt", function() chainsaw.typeLog() end, { desc = "Log type" })
+	set({ "n", "v", "x" }, "<leader>la", function() chainsaw.assertLog() end, { desc = "Log assert" })
+	set({ "n", "v", "x" }, "<leader>lm", function() chainsaw.messageLog() end, { desc = "Log custom message" })
+	set({ "n", "v", "x" }, "<leader>li", function() chainsaw.timeLog() end, { desc = "Place time counter" })
+	set({ "n", "v", "x" }, "<leader>ld", function() chainsaw.debugLog() end, { desc = "Debug log" })
+	set({ "n", "v", "x" }, "<leader>ls", function() chainsaw.stacktraceLog() end, { desc = "Print stacktrace" })
+	set({ "n", "v", "x" }, "<leader>lc", function() chainsaw.clearLog() end, { desc = "Clear console" })
+	set({ "n", "v", "x" }, "<leader>lr", function() chainsaw.removeLogs() end, { desc = "🛑 Delete logs" })
 
 	require("dooing").setup({
 		pretty_print_json = true,
@@ -65,20 +86,30 @@ Config.later(function()
 		},
 	})
 
+	require("modicator").setup()
+
+	require("treesj").setup({
+    use_default_keymaps = false
+  })
+
+	set({"n", "v", "x"}, "<leader>fmm", function () require("treesj").toggle() end, { desc = "Toggle code block"})
+	set({"n", "v", "x"}, "<leader>fmM", function ()
+		require("treesj").toggle({split = {recursive = true}})
+	end, { desc = "Toggle code block"})
+
 	require("colorful-winsep").setup()
 
 	require("flash").setup({})
 
 	local flash = require("flash")
 
-  -- stylua: ignore start
-  vim.keymap.set({ "n", "x", "o" }, "s", function() flash.jump() end, { desc = "Flash" })
-  vim.keymap.set({ "n", "o", "x" }, "S", function() flash.treesitter() end, { desc = "Flash Treesitter" })
-  vim.keymap.set("o", "r", function() flash.remote() end, { desc = "Remote Flash" })
-  vim.keymap.set({ "o", "x" }, "R", function() flash.treesitter_search() end, { desc = "Treesitter Search" })
-  vim.keymap.set({ "c" }, "<c-s>", function() flash.toggle() end, { desc = "Toggle Flash Search" })
+  set({ "n", "x", "o" }, "s", function() flash.jump() end, { desc = "Flash" })
+  set({ "n", "o", "x" }, "S", function() flash.treesitter() end, { desc = "Flash Treesitter" })
+  set("o", "r", function() flash.remote() end, { desc = "Remote Flash" })
+  set({ "o", "x" }, "R", function() flash.treesitter_search() end, { desc = "Treesitter Search" })
+  set({ "c" }, "<c-s>", function() flash.toggle() end, { desc = "Toggle Flash Search" })
 
-  vim.keymap.set({ "n", "o", "x" }, "<c-space>", function()
+  set({ "n", "o", "x" }, "<c-space>", function()
     flash.treesitter({
       actions = {
         ["<c-space>"] = "next",

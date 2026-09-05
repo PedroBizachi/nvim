@@ -84,6 +84,10 @@
       "rev": "bcb4b2688b38f5c48ada025abe130d41840e11d5",
       "src": "https://github.com/mini.nvim/mini.nvim"
     },
+    "modicator.nvim": {
+      "rev": "7f867b4980946f115f4ccb922637d70d89a59cb4",
+      "src": "https://github.com/mawkler/modicator.nvim"
+    },
     "neoconf.nvim": {
       "rev": "93dc1293afc97c03ff7fecef654ba6d13e7e9f7e",
       "src": "https://github.com/folke/neoconf.nvim"
@@ -123,6 +127,10 @@
     "nui.nvim": {
       "rev": "10fc361835c856ba4233ef5ea135b919bf3dce97",
       "src": "https://github.com/MunifTanjim/nui.nvim"
+    },
+    "nvim-chainsaw": {
+      "rev": "7985588fc3840e56e0fb131b37d95c85ea0d230a",
+      "src": "https://github.com/chrisgrieser/nvim-chainsaw"
     },
     "nvim-dap": {
       "rev": "9e848e09a697ee95302a3ef2dd43fd6eb709e570",
@@ -180,9 +188,17 @@
       "rev": "07d20fce48a5629686aefb0a7cd4b25e33947d50",
       "src": "https://github.com/supermaven-inc/supermaven-nvim"
     },
+    "tmux-status.nvim": {
+      "rev": "d985ba67132269dedc9a5f6479f2d40f10e06315",
+      "src": "https://github.com/christopher-francisco/tmux-status.nvim"
+    },
     "todo-comments.nvim": {
       "rev": "31e3c38ce9b29781e4422fc0322eb0a21f4e8668",
       "src": "https://github.com/folke/todo-comments.nvim"
+    },
+    "treesj": {
+      "rev": "79aedb401bbdc7e4202f7881eab5f6feb2105b0a",
+      "src": "https://github.com/wansmer/treesj"
     },
     "trouble.nvim": {
       "rev": "bd67efe408d4816e25e8491cc5ad4088e708a69a",
