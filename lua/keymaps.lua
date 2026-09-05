@@ -10,8 +10,8 @@ set({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'",      { desc = "Up",   expr =
 set({ "n", "x" }, "<Up>", "v:count == 0 ? 'gk' : 'k'",   { desc = "Up",   expr = true, silent = true })
 
 -- Move down without moving the cursor
-set("n", "<C-d>", "<C-d>zz", { desc = "Scroll Down" })
-set("n", "<C-u>", "<C-u>zz", { desc = "Scroll Up" })
+set("n", "<C-d>", "<C-d>zzzz", { desc = "Scroll Down" })
+set("n", "<C-u>", "<C-u>zzzz", { desc = "Scroll Up" })
 
 -- windows
 set("n", "<leader>-", "<C-W>s",  { desc = "Split Window Below", remap = true })
