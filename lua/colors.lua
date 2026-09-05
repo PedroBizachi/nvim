@@ -342,10 +342,12 @@ function M.apply()
 	-- === Treesitter ===
 	-- set(0, "@variable", { fg = custom.white, italic = true })
 
-	-- === MiniFiles ===
-	-- set(0, "MiniFilesFile",   { fg = catppuccin.foreground, bold = true })
-	-- set(0, "MiniFilesBorder", { fg = catppuccin.foreground, bg = nil    })
-	-- set(0, "MiniFilesNormal", { fg = catppuccin.foreground, bg = nil    })
+	-- === Mini ===
+	set(0, "MiniStatuslineModeNormal",   { fg = "#f8771a", bg = "#2a1f1f", bold = true })
+  set(0, "MiniStatuslineModeTerminal", { fg = "#f8771a", bg = "#2a1f1f", bold = true })
+  set(0, "MiniStatuslineDevinfo",      { fg = "white",   bg = "#0a0a0a", bold = true })
+	set(0, "MiniTablineCurrent",         { fg = "#f8771a", bg = "#2a1f1f", bold = true })
+	set(0, "MiniTablineVisible",         { fg = "#f8771a", bg = "#2a1f1f", bold = true })
 
 	-- === StartupTime ===
 	set(0, "StartupTimeStartupValue", { fg = monokai.yellow })

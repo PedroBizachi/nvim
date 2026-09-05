@@ -1,6 +1,8 @@
 -- Mini.Icons
 Config.later(function()
 	vim.pack.add({ "https://github.com/mini.nvim/mini.nvim" })
+	vim.pack.add({ "https://github.com/christopher-francisco/tmux-status.nvim" })
+
 	-- Set up to not prefer extension-based icon for some extensions
 	local ext3_blocklist = { scm = true, txt = true, yml = true }
 	local ext4_blocklist = { json = true, yaml = true }
@@ -39,8 +41,21 @@ Config.later(function()
 	--  and try some other statusline plugin
 	local statusline = require("mini.statusline")
 	local statusline_devinfo_hl = "%#MiniStatuslineDevinfo#"
+	local statusline_icon_hl = function(hl)
+		local source = vim.api.nvim_get_hl(0, { name = hl, link = false })
+		local devinfo = vim.api.nvim_get_hl(0, { name = "MiniStatuslineDevinfo", link = false })
+		local name = "MiniStatuslineIcon" .. hl:gsub("[^%w_]", "_")
+
+		vim.api.nvim_set_hl(0, name, {
+			fg = source.fg or devinfo.fg,
+			bg = devinfo.bg,
+			bold = true,
+		})
+
+		return "%#" .. name .. "#"
+	end
 	local color = function(hl, text)
-		return string.format("%%#%s#%s%s", hl, text, statusline_devinfo_hl)
+		return string.format("%s%s%s", statusline_icon_hl(hl), text, statusline_devinfo_hl)
 	end
 	local bold_statusline_groups = function()
 		for _, group in ipairs({
@@ -65,6 +80,24 @@ Config.later(function()
 	statusline.setup({ use_icons = vim.g.have_nerd_font })
 	vim.schedule(bold_statusline_groups)
 
+	local default_section_mode = statusline.section_mode
+	local neovim_logo = vim.g.have_nerd_font and "" or "NVIM"
+	---@diagnostic disable-next-line: duplicate-set-field
+	statusline.section_mode = function(args)
+		args = args or {}
+
+		local mode, hl = default_section_mode(args)
+		if mode == "" then
+			return mode, hl
+		end
+
+		if vim.api.nvim_get_mode().mode == "n" and MiniStatusline.is_truncated(args.trunc_width) then
+			return neovim_logo, hl
+		end
+
+		return neovim_logo .. " " .. mode, hl
+	end
+
 	---@diagnostic disable-next-line: duplicate-set-field
 	statusline.section_git = function(args)
 		args = args or {}
@@ -78,7 +111,7 @@ Config.later(function()
 		end
 
 		local icon = args.icon or Config.icons.kinds.Control
-		local parts = { icon .. " " .. (git.head ~= "" and git.head or "-") }
+		local parts = { icon .. (git.head ~= "" and git.head or "-") }
 
 		local icons = Config.icons.git
 		if (git.added or 0) > 0 then
@@ -144,7 +177,17 @@ Config.later(function()
 	statusline.section_filename = function(args)
 		args = args or {}
 
-		return (vim.fn.expand("%:t") ~= "" and "%t" or "[No Name]") .. "%m%r"
+		local tmux_windows = ""
+		local ok, tmux_status = pcall(require, "tmux-status")
+		if ok then
+			local windows_ok, windows = pcall(tmux_status.tmux_windows)
+			if windows_ok and windows ~= "Not within tmux" then
+				tmux_windows = windows
+			end
+		end
+		return (vim.fn.expand("%:t") ~= "" and " %t" or "[No Name]")
+			.. "%m%r%="
+			.. (vim.fn.expand("%:t") ~= "" and tmux_windows or "Not within tmux")
 	end
 
 	---@diagnostic disable-next-line: duplicate-set-field
@@ -158,7 +201,7 @@ Config.later(function()
 		local filetype_info = filetype
 		if vim.g.have_nerd_font and MiniIcons then
 			local icon, hl = MiniIcons.get("filetype", filetype)
-			filetype_info = color(hl, icon) .. " " .. filetype
+			filetype_info = color(hl, " ") .. color(hl, icon) .. " " .. filetype
 		end
 
 		if MiniStatusline.is_truncated(args.trunc_width) or vim.bo.buftype ~= "" then
