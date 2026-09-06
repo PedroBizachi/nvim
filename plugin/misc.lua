@@ -436,12 +436,20 @@ Config.on_event({ "BufReadPre", "BufNewFile" }, function()
 	Config.later(function()
 		Snacks.toggle({
 			name = "AI",
-			get = function()
-				return require("supermaven-nvim.api").is_running()
-			end,
-			set = function()
-				require("supermaven-nvim.api").toggle()
-			end,
+get = function()
+		return vim.g.ai_cmp == true
+	end,
+	set = function(state)
+		vim.g.ai_cmp = state
+		require("supermaven-nvim.completion_preview").disable_inline_completion = not state
+
+		local api = require("supermaven-nvim.api")
+		if state then
+			api.start()
+		else
+			api.stop()
+		end
+	end,
 		}):map("<leader>uA")
 	end)
 

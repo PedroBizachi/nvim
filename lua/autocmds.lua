@@ -173,8 +173,8 @@ vim.api.nvim_create_user_command("PackDel", function(opts)
 	vim.pack.del(opts.fargs)
 end, { nargs = "+", desc = "Deletes plugins (space separated)" })
 
-vim.api.nvim_create_user_command("PackCheck", function()
-	local non_active = vim.iter(vim.pack.get())
+local function get_non_active_plugins()
+	return vim.iter(vim.pack.get())
 		:filter(function(x)
 			return not x.active
 		end)
@@ -182,9 +182,56 @@ vim.api.nvim_create_user_command("PackCheck", function()
 			return x.spec.name
 		end)
 		:totable()
+end
+
+local function delete_non_active_plugins(plugins)
+	if #plugins == 0 then
+		return
+	end
+
+	vim.pack.del(plugins, { force = true })
+	vim.notify("  Deleted " .. #plugins .. " non-active plugin(s)", vim.log.levels.INFO)
+	print("Non-active plugins deleted!")
+	vim.api.nvim_exec_autocmds("User", { pattern = "PackChanged" })
+end
+
+local function pick_non_active_plugins(non_active)
+	if package.loaded.snacks and Snacks.picker then
+		local items = vim.tbl_map(function(name)
+			return { text = name, name = name }
+		end, non_active)
+
+		Snacks.picker({
+			title = "Pick inactive plugins to delete",
+			items = items,
+			format = "text",
+			confirm = function(picker)
+				local plugins = vim.tbl_map(function(item)
+					return item.name
+				end, picker:selected({ fallback = true }))
+
+				picker:close()
+				delete_non_active_plugins(plugins)
+			end,
+		})
+		return
+	end
+
+	vim.ui.select(non_active, { prompt = "Delete inactive plugin:" }, function(plugin)
+		if plugin then
+			delete_non_active_plugins({ plugin })
+		else
+			vim.notify("Cancelled. No plugins were deleted!", vim.log.levels.INFO)
+		end
+	end)
+end
+
+vim.api.nvim_create_user_command("PackCheck", function()
+	local non_active = get_non_active_plugins()
 
 	if #non_active == 0 then
 		vim.notify("  No non-active plugins found!", vim.log.levels.INFO)
+		return
 	end
 
 	vim.print("󰒲  Non-active plugins: ")
@@ -195,14 +242,40 @@ vim.api.nvim_create_user_command("PackCheck", function()
 
 	print(" ")
 
-	local choice = vim.fn.confirm("Delete All non-active plugins from disk?", "&Yes\n&No", 2)
+	local choice = vim.fn.confirm("Delete non-active plugins from disk?", "&All\n&Pick\n&No", 3)
 
 	if choice == 1 then
-		vim.pack.del(non_active, { force = true })
-		vim.notify("  Deteled " .. #non_active .. " non-active plugin(s)", vim.log.levels.INFO)
-		print("Non-active plugins deleted!")
-		vim.api.nvim_exec_autocmds("User", { pattern = "PackChanged" })
+		delete_non_active_plugins(non_active)
+	elseif choice == 2 then
+		pick_non_active_plugins(non_active)
 	else
 		vim.notify("Cancelled. No plugins were deleted!", vim.log.levels.INFO)
 	end
-end, { desc = "List non active plugins and select to delete" })
+end, { desc = "List non-active plugins and select plugins to delete" })
+
+-- Set cursorcolumn only when the text pass the configured point
+local cc_group = vim.api.nvim_create_augroup("DynamicColorColumn", { clear = true })
+vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "BufWinEnter" }, {
+	group = cc_group,
+	pattern = "*",
+	callback = function()
+		local target_column = 120
+		local max_len = 0
+		local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+
+		-- Find the length of the longest line
+		for _, line in ipairs(lines) do
+			local len = vim.fn.strdisplaywidth(line)
+			if len > max_len then
+				max_len = len
+			end
+		end
+
+		-- Show the vertical guide line ONLY if text breaches the target
+		if max_len > target_column then
+			vim.wo.colorcolumn = tostring(target_column)
+		else
+			vim.wo.colorcolumn = ""
+		end
+	end,
+})
