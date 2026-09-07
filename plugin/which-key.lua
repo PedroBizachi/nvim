@@ -80,6 +80,7 @@ Config.later(function()
 				{ pattern = "stash", cat = "filetype", name = "git" },
 				{ pattern = "hunk", cat = "filetype", name = "git" },
 				{ pattern = "symbol", icon = "󰔶 ", color = "orange" },
+				{ pattern = "log", icon = " ", color = "yellow" },
 				{ pattern = "type", icon = "󰆩 ", color = "yellow" },
 				{ pattern = "call", icon = "󰃷 ", color = "blue" },
 				{ pattern = "hover", icon = "󰋖 ", color = "cyan" },

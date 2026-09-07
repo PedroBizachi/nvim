@@ -1,7 +1,6 @@
 -- Mini.Icons
 Config.later(function()
 	vim.pack.add({ "https://github.com/mini.nvim/mini.nvim" })
-	vim.pack.add({ "https://github.com/christopher-francisco/tmux-status.nvim" })
 
 	-- Set up to not prefer extension-based icon for some extensions
 	local ext3_blocklist = { scm = true, txt = true, yml = true }
@@ -13,7 +12,6 @@ Config.later(function()
 	})
 
 	-- Mock 'nvim-tree/nvim-web-devicons' for plugins without 'mini.icons' support.
-	-- Not needed for 'mini.nvim' or MiniMax, but might be useful for others.
 	Config.later(MiniIcons.mock_nvim_web_devicons)
 
 	-- Add LSP kind icons. Useful for 'mini.completion'.
@@ -37,8 +35,6 @@ Config.later(function()
 	})
 
 	-- Simple and easy statusline.
-	--  You could remove this setup call if you don't like it,
-	--  and try some other statusline plugin
 	local statusline = require("mini.statusline")
 	local statusline_devinfo_hl = "%#MiniStatuslineDevinfo#"
 	local statusline_icon_hl = function(hl)
@@ -76,12 +72,9 @@ Config.later(function()
 			end
 		end
 	end
-	-- Set `use_icons` to true if you have a Nerd Font
-	statusline.setup({ use_icons = vim.g.have_nerd_font })
-	vim.schedule(bold_statusline_groups)
 
 	local default_section_mode = statusline.section_mode
-	local neovim_logo = vim.g.have_nerd_font and "" or "NVIM"
+	local neovim_logo = vim.g.have_nerd_font and " " or "NVIM"
 	---@diagnostic disable-next-line: duplicate-set-field
 	statusline.section_mode = function(args)
 		args = args or {}
@@ -91,7 +84,7 @@ Config.later(function()
 			return mode, hl
 		end
 
-		if vim.api.nvim_get_mode().mode == "n" and MiniStatusline.is_truncated(args.trunc_width) then
+		if vim.api.nvim_get_mode().mode == "n" and statusline.is_truncated(args.trunc_width) then
 			return neovim_logo, hl
 		end
 
@@ -101,7 +94,7 @@ Config.later(function()
 	---@diagnostic disable-next-line: duplicate-set-field
 	statusline.section_git = function(args)
 		args = args or {}
-		if MiniStatusline.is_truncated(args.trunc_width) then
+		if statusline.is_truncated(args.trunc_width) then
 			return ""
 		end
 
@@ -130,7 +123,7 @@ Config.later(function()
 	---@diagnostic disable-next-line: duplicate-set-field
 	statusline.section_diagnostics = function(args)
 		args = args or {}
-		if MiniStatusline.is_truncated(args.trunc_width) or not vim.diagnostic.is_enabled() then
+		if statusline.is_truncated(args.trunc_width) or not vim.diagnostic.is_enabled() then
 			return ""
 		end
 
@@ -161,7 +154,7 @@ Config.later(function()
 	---@diagnostic disable-next-line: duplicate-set-field
 	statusline.section_lsp = function(args)
 		args = args or {}
-		if MiniStatusline.is_truncated(args.trunc_width) then
+		if statusline.is_truncated(args.trunc_width) then
 			return ""
 		end
 
@@ -177,19 +170,17 @@ Config.later(function()
 	statusline.section_filename = function(args)
 		args = args or {}
 
-		local tmux_windows = ""
-		local ok, tmux_status = pcall(require, "tmux-status")
-		if ok then
-			local windows_ok, windows = pcall(tmux_status.tmux_windows)
-			if windows_ok and windows ~= "Not within tmux" then
-				tmux_windows = windows
-			end
-		end
-		return (vim.fn.expand("%:t") ~= "" and " %t" or "[No Name]")
-			.. "%m%r%="
-			.. (vim.fn.expand("%:t") ~= "" and tmux_windows or "Not within tmux")
+		return (vim.fn.expand("%:t") ~= "" and " %t" or "[No Name]") .. "%m%r"
 	end
 
+	local section_supermaven = function()
+		local ok, api = pcall(require, "supermaven-nvim.api")
+		if not ok or not api.is_running() then
+			return ""
+		end
+
+		return color("CmpItemKindSupermaven", Config.icons.kinds.Supermaven)
+	end
 	---@diagnostic disable-next-line: duplicate-set-field
 	statusline.section_fileinfo = function(args)
 		args = args or {}
@@ -203,9 +194,15 @@ Config.later(function()
 			local icon, hl = MiniIcons.get("filetype", filetype)
 			filetype_info = color(hl, " ") .. color(hl, icon) .. " " .. filetype
 		end
+		local supermaven = section_supermaven()
 
-		if MiniStatusline.is_truncated(args.trunc_width) or vim.bo.buftype ~= "" then
-			return filetype_info
+		if statusline.is_truncated(args.trunc_width) or vim.bo.buftype ~= "" then
+			return table.concat(
+				vim.tbl_filter(function(item)
+					return item ~= ""
+				end, { supermaven, filetype_info }),
+				" "
+			)
 		end
 
 		local venv = ""
@@ -219,12 +216,17 @@ Config.later(function()
 			end
 		end
 
-		return string.format("%s %s", filetype_info, venv)
+		return table.concat(
+			vim.tbl_filter(function(item)
+				return item ~= ""
+			end, { supermaven, filetype_info, venv }),
+			" "
+		)
 	end
 
 	---@diagnostic disable-next-line: duplicate-set-field
 	statusline.section_searchcount = function(args)
-		if vim.v.hlsearch == 0 or MiniStatusline.is_truncated(args.trunc_width) then
+		if vim.v.hlsearch == 0 or statusline.is_truncated(args.trunc_width) then
 			return ""
 		end
 		local ok, s_count = pcall(vim.fn.searchcount, (args or {}).options or { recompute = true })
@@ -246,6 +248,36 @@ Config.later(function()
 	statusline.section_location = function()
 		return "%2l:%-2v %p%%:%-L"
 	end
+
+	local function active_statusline()
+		local mode, mode_hl = statusline.section_mode({ trunc_width = 120 })
+		local git = statusline.section_git({ trunc_width = 40 })
+		local diff = statusline.section_diff({ trunc_width = 75 })
+		local diagnostics = statusline.section_diagnostics({ trunc_width = 75 })
+		local lsp = statusline.section_lsp({ trunc_width = 75 })
+		local filename = statusline.section_filename({ trunc_width = 140 })
+		local fileinfo = statusline.section_fileinfo({ trunc_width = 120 })
+		local search = statusline.section_searchcount({ trunc_width = 75 })
+		local location = statusline.section_location({ trunc_width = 75 })
+
+		return statusline.combine_groups({
+			{ hl = mode_hl, strings = { mode } },
+			{ hl = "MiniStatuslineDevinfo", strings = { git, diff } },
+			"%<", -- Mark general truncate point
+			{ hl = "MiniStatuslineFilename", strings = { filename } },
+			"%=", -- End left alignment
+			{ hl = "MiniStatuslineDevinfo", strings = { fileinfo, lsp, diagnostics } },
+			{ hl = mode_hl, strings = { search, location } },
+		})
+	end
+
+	statusline.setup({
+		content = {
+			active = active_statusline,
+		},
+		use_icons = vim.g.have_nerd_font,
+	})
+	vim.schedule(bold_statusline_groups)
 
 	local ai = require("mini.ai")
 	ai.setup({

@@ -344,8 +344,9 @@ function M.apply()
 
 	-- === Mini ===
 	set(0, "MiniStatuslineModeNormal",   { fg = "#f8771a", bg = "#2a1f1f", bold = true })
-  set(0, "MiniStatuslineModeTerminal", { fg = "#f8771a", bg = "#2a1f1f", bold = true })
-  set(0, "MiniStatuslineDevinfo",      { fg = "white",   bg = "#0a0a0a", bold = true })
+	set(0, "MiniStatuslineModeTerminal", { fg = "#f8771a", bg = "#2a1f1f", bold = true })
+	set(0, "MiniStatuslineDevinfo",      { fg = "white",   bg = "#0a0a0a", bold = true })
+	set(0, "CmpItemKindSupermaven",      { fg = "#f8771a", bg = nil,       bold = true })
 	set(0, "MiniTablineCurrent",         { fg = "#f8771a", bg = "#2a1f1f", bold = true })
 	set(0, "MiniTablineVisible",         { fg = "#f8771a", bg = "#2a1f1f", bold = true })
 

@@ -143,13 +143,14 @@ Config.icons = {
 		Snippet = "󱄽 ",
 		String = " ",
 		Struct = "󰆼 ",
-		Supermaven = " ",
+		Supermaven = "",
 		TabNine = "󰏚 ",
 		Text = " ",
 		TypeParameter = " ",
 		Unit = " ",
 		Value = " ",
 		Variable = "󰀫 ",
+		Log = " ",
 	},
 }
 
