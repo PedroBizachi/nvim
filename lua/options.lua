@@ -40,6 +40,7 @@ opt.foldtext = ""
 opt.formatoptions = "jcroqlnt" -- tcqj
 opt.grepformat = "%f:%l:%c:%m"
 opt.grepprg = "rg --vimgrep"
+g.cursorcolumn_width = 120
 
 -- QoL
 o.autochdir = false

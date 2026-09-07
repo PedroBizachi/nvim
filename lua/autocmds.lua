@@ -158,7 +158,44 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
 	end,
 })
 
+-- Set cursorcolumn only when the text pass the configured point
+local cc_group = vim.api.nvim_create_augroup("DynamicColorColumn", { clear = true })
+vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "BufWinEnter" }, {
+	group = cc_group,
+	pattern = "*",
+	callback = function()
+		local target_column = vim.g.cursorcolumn_width
+		local max_len = 0
+		local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+
+		-- Find the length of the longest line
+		for _, line in ipairs(lines) do
+			local len = vim.fn.strdisplaywidth(line)
+			if len > max_len then
+				max_len = len
+			end
+		end
+
+		-- Show the vertical guide line ONLY if text breaches the target
+		if max_len > target_column then
+			vim.wo.colorcolumn = tostring(target_column)
+		else
+			vim.wo.colorcolumn = ""
+		end
+	end,
+})
+
 -- === USERCMDS ===
+
+-- TODO: Make it change automatically based on project configuration
+-- Change cursorcolumn_width based on project scope
+vim.api.nvim_create_user_command("CursorColumnWidth", function()
+	vim.ui.input({
+		prompt = "Change cursorcolumn width: ",
+	}, function(input)
+		vim.g.cursorcolumn_width = tonumber(input)
+	end)
+end, { desc = "Change cursorcolumn width" })
 
 -- NOTE: Pack commands enhanced
 vim.api.nvim_create_user_command("PackAdd", function(opts)
@@ -252,30 +289,3 @@ vim.api.nvim_create_user_command("PackCheck", function()
 		vim.notify("Cancelled. No plugins were deleted!", vim.log.levels.INFO)
 	end
 end, { desc = "List non-active plugins and select plugins to delete" })
-
--- Set cursorcolumn only when the text pass the configured point
-local cc_group = vim.api.nvim_create_augroup("DynamicColorColumn", { clear = true })
-vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "BufWinEnter" }, {
-	group = cc_group,
-	pattern = "*",
-	callback = function()
-		local target_column = 120
-		local max_len = 0
-		local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-
-		-- Find the length of the longest line
-		for _, line in ipairs(lines) do
-			local len = vim.fn.strdisplaywidth(line)
-			if len > max_len then
-				max_len = len
-			end
-		end
-
-		-- Show the vertical guide line ONLY if text breaches the target
-		if max_len > target_column then
-			vim.wo.colorcolumn = tostring(target_column)
-		else
-			vim.wo.colorcolumn = ""
-		end
-	end,
-})
