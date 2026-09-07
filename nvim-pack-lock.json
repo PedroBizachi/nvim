@@ -81,8 +81,9 @@
       "src": "https://github.com/mason-org/mason.nvim"
     },
     "mini.nvim": {
-      "rev": "bcb4b2688b38f5c48ada025abe130d41840e11d5",
-      "src": "https://github.com/mini.nvim/mini.nvim"
+      "rev": "1345d191bb3da9c7b0e977f4387c5761f9bff68d",
+      "src": "https://github.com/nvim-mini/mini.nvim",
+      "version": "'stable'"
     },
     "modicator.nvim": {
       "rev": "7f867b4980946f115f4ccb922637d70d89a59cb4",

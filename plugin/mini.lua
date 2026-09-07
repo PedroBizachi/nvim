@@ -1,6 +1,8 @@
 -- Mini.Icons
 Config.later(function()
-	vim.pack.add({ "https://github.com/mini.nvim/mini.nvim" })
+	vim.pack.add({
+		{ src = "https://github.com/nvim-mini/mini.nvim", version = "stable" },
+	})
 
 	-- Set up to not prefer extension-based icon for some extensions
 	local ext3_blocklist = { scm = true, txt = true, yml = true }
