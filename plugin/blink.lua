@@ -201,14 +201,22 @@ Config.on_event({ "BufReadPre", "BufNewFile" }, function()
 			["<C-l>"] = { "show", "show_documentation", "hide_documentation", "hide" },
 
 			["<Tab>"] = {
-				"select_next",
+				function(cmp)
+					if cmp.is_visible() then
+						return cmp.select_next()
+					end
+				end,
 				"snippet_forward",
 				---@module 'sidekick'
 				function()
 					return require("sidekick").nes_jump_or_apply()
 				end,
 				function()
-					return vim.lsp.inline_completion.get()
+					local preview = require("supermaven-nvim.completion_preview")
+					if preview.has_suggestion() then
+						preview.on_accept_suggestion()
+						return true
+					end
 				end,
 				"fallback",
 			},

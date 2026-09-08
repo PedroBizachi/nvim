@@ -419,6 +419,10 @@ Config.on_event({ "BufReadPre", "BufNewFile" }, function()
 			accept_suggestion = nil, -- handled by blink.cmp
 		},
 	})
+  -- Starts stopped
+  if not vim.g.ai_cmp then
+    require("supermaven-nvim.api").stop()
+  end
 
 	require("lspkind").init({
 		---@diagnostic disable-next-line: missing-fields
@@ -438,20 +442,20 @@ Config.on_event({ "BufReadPre", "BufNewFile" }, function()
 	Config.later(function()
 		Snacks.toggle({
 			name = "AI",
-get = function()
-		return vim.g.ai_cmp == true
-	end,
-	set = function(state)
-		vim.g.ai_cmp = state
-		require("supermaven-nvim.completion_preview").disable_inline_completion = not state
+			get = function()
+				return vim.g.ai_cmp == true
+			end,
+			set = function(state)
+				vim.g.ai_cmp = state
+        require('supermaven-nvim.completion_preview').disable_inline_completion = not state
 
-		local api = require("supermaven-nvim.api")
-		if state then
-			api.start()
-		else
-			api.stop()
-		end
-	end,
+				local api = require("supermaven-nvim.api")
+				if state then
+					api.start()
+				else
+					api.stop()
+				end
+			end,
 		}):map("<leader>uA")
 	end)
 
