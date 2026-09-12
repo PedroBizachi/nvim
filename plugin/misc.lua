@@ -55,15 +55,51 @@ Config.on_event({ "BufReadPost", "BufNewFile" }, function()
 end)
 
 Config.later(function()
-	vim.pack.add({ "https://github.com/dstein64/vim-startuptime" })
-	vim.pack.add({ "https://github.com/folke/flash.nvim" })
-	vim.pack.add({ "https://github.com/nvim-zh/colorful-winsep.nvim" })
-	vim.pack.add({ "https://github.com/atiladefreitas/dooing" })
-	vim.pack.add({ "https://github.com/chrisgrieser/nvim-chainsaw" })
-	vim.pack.add({ "https://github.com/wansmer/treesj" })
-	vim.pack.add({ "https://github.com/mawkler/modicator.nvim" })
+	vim.pack.add({
+		"https://github.com/dstein64/vim-startuptime",
+		"https://github.com/folke/flash.nvim",
+		"https://github.com/nvim-zh/colorful-winsep.nvim",
+		"https://github.com/atiladefreitas/dooing",
+		"https://github.com/chrisgrieser/nvim-chainsaw",
+		"https://github.com/wansmer/treesj",
+		"https://github.com/mawkler/modicator.nvim",
+		"https://github.com/m4xshen/smartcolumn.nvim",
+		"https://github.com/rachartier/tiny-inline-diagnostic.nvim",
+		"https://github.com/stevearc/quicker.nvim",
+		"https://github.com/j-hui/fidget.nvim",
+		"https://github.com/fredrikaverpil/godoc.nvim",
+		"https://github.com/olexsmir/gopher.nvim",
+	})
 
 	local set = vim.keymap.set
+
+  vim.diagnostic.config({ virtual_text = false })
+  require('tiny-inline-diagnostic').setup({
+    options = {
+      add_messages = {
+        display_count = true,
+      },
+      multilines = {
+        enabled = true,
+        always_show = true,
+      },
+      show_source = {
+        enabled = true,
+      }
+    }
+  })
+
+  require("smartcolumn").setup({
+    colorcolumn = "80",
+   disabled_filetypes = { "NvimTree", "lazy", "mason", "help", "checkhealth", "lspinfo", "noice", "Trouble", "fish", "zsh"},
+   -- TODO: Pass a function to get local project line width configuration
+   custom_colorcolumn = {
+       lua = "120",
+       python = "88",
+   },
+   scope = "file",
+   editorconfig = true,
+  })
 
 	require("chainsaw").setup()
 
@@ -90,6 +126,33 @@ Config.later(function()
 
 	require("modicator").setup()
 
+	require("quicker").setup()
+
+	require("godoc").setup({
+		adapters = {
+			{
+				name = "go",
+				opts = {
+					command = "GoDoc", -- the vim command to invoke Go documentation
+					get_syntax_info = function()
+						return {
+							filetype = "godoc", -- filetype of the documentation buffer
+							language = "go",      -- tree-sitter parser, for syntax highlighting
+						}
+					end,
+				},
+			},
+		},
+		window = {
+			type = "split",
+		},
+		picker = {
+			type = "snacks",
+		}
+	})
+	vim.keymap.set("n", "<leader>csg", ":GoDoc<cr>", { desc = "Go", silent = true })
+	require("gopher").setup()
+
 	require("treesj").setup({
     use_default_keymaps = false
   })
@@ -101,6 +164,8 @@ Config.later(function()
 
 	require("colorful-winsep").setup()
 
+	require("fidget").setup({})
+
 	require("flash").setup({})
 
 	local flash = require("flash")
@@ -109,16 +174,6 @@ Config.later(function()
   set({ "n", "o", "x" }, "S", function() flash.treesitter() end, { desc = "Flash Treesitter" })
   set("o", "r", function() flash.remote() end, { desc = "Remote Flash" })
   set({ "o", "x" }, "R", function() flash.treesitter_search() end, { desc = "Treesitter Search" })
-  set({ "c" }, "<c-s>", function() flash.toggle() end, { desc = "Toggle Flash Search" })
-
-  set({ "n", "o", "x" }, "<c-space>", function()
-    flash.treesitter({
-      actions = {
-        ["<c-space>"] = "next",
-        ["<BS>"] = "prev"
-      }
-    })
-  end, { desc = "Treesitter Incremental Selection" })
 end)
 
 Config.on_event({ "BufReadPost", "BufNewFile" }, function()

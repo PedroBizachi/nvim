@@ -12,6 +12,28 @@ vim.api.nvim_create_autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
 	end,
 })
 
+-- Open 'help' pages in vertical split
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "help",
+	command = "wincmd L"
+})
+
+-- Install stdsym after installing/updating godoc
+vim.api.nvim_create_autocmd("PackChanged", {
+  callback = function(ev)
+    if
+      ev.data.spec.name == "godoc.nvim"
+      and (ev.data.kind == "install" or ev.data.kind == "update")
+    then
+      vim.system({
+        "go",
+        "install",
+        "github.com/lotusirous/gostdsym/stdsym@latest",
+      }):wait()
+    end
+  end,
+})
+
 -- no auto continue comments on new line
 vim.api.nvim_create_autocmd("FileType", {
 	group = vim.api.nvim_create_augroup("no_auto_comment", {}),
@@ -158,44 +180,11 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
 	end,
 })
 
--- Set cursorcolumn only when the text pass the configured point
-local cc_group = vim.api.nvim_create_augroup("DynamicColorColumn", { clear = true })
-vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "BufWinEnter" }, {
-	group = cc_group,
-	pattern = "*",
-	callback = function()
-		local target_column = vim.g.cursorcolumn_width
-		local max_len = 0
-		local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-
-		-- Find the length of the longest line
-		for _, line in ipairs(lines) do
-			local len = vim.fn.strdisplaywidth(line)
-			if len > max_len then
-				max_len = len
-			end
-		end
-
-		-- Show the vertical guide line ONLY if text breaches the target
-		if max_len > target_column then
-			vim.wo.colorcolumn = tostring(target_column)
-		else
-			vim.wo.colorcolumn = ""
-		end
-	end,
-})
-
 -- === USERCMDS ===
 
--- TODO: Make it change automatically based on project configuration
--- Change cursorcolumn_width based on project scope
-vim.api.nvim_create_user_command("CursorColumnWidth", function()
-	vim.ui.input({
-		prompt = "Change cursorcolumn width: ",
-	}, function(input)
-		vim.g.cursorcolumn_width = tonumber(input)
-	end)
-end, { desc = "Change cursorcolumn width" })
+vim.api.nvim_create_user_command("Restart", function()
+	vim.cmd([[restart lua vim.schedule(function() vim.cmd("filetype detect") end)]])
+end, { desc = "Restart Neovim and detect the restored buffer's filetype" })
 
 -- NOTE: Pack commands enhanced
 vim.api.nvim_create_user_command("PackAdd", function(opts)

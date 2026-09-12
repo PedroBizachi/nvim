@@ -6,7 +6,7 @@ Config.later(function()
 		"https://github.com/folke/trouble.nvim",
 	})
 
-	Config.on_event({ "BufReadPost", "BufNewFile" }, function()
+	Config.on_event({ "BufReadPost", "BufReadPre", "BufNewFile" }, function()
 		vim.pack.add({ "https://github.com/folke/trouble.nvim" })
 
 		require("trouble").setup({})
@@ -15,9 +15,12 @@ Config.later(function()
 
 		-- stylua: ignore start
 		set("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", { desc = "Diagnostics (Trouble)" })
-		set("n", "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", { desc = "Buffer Diagnostics (Trouble)" })
-		set("n", "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>", { desc = "Symbols (Trouble)" })
-		set("n", "<leader>cS", "<cmd>Trouble lsp toggle focus=false win.position=right<cr>", { desc = "LSP Definitions/references/... (Trouble)" })
+		set(
+      "n",
+      "<leader>xX",
+      "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+      { desc = "Buffer Diagnostics (Trouble)" }
+    )
 		set("n", "<leader>xL", "<cmd>Trouble loclist toggle<cr>", { desc = "Location List (Trouble)" })
 		set("n", "<leader>xq", "<cmd>Trouble qflist toggle<cr>", { desc = "Quickfix List (Trouble)" })
 	end)
@@ -138,7 +141,12 @@ Config.later(function()
 	set("n", "<leader>n", function() Snacks.notifier.show_history() end, { desc = "Notification History", })
 	-- find
 	set("n", "<leader>fb", function() Snacks.picker.buffers() end, { desc = "Buffers", })
-	set("n", "<leader>fc", function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end, { desc = "Find Config File", })
+	set(
+    "n",
+    "<leader>fc",
+    function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end,
+    { desc = "Find Config File", }
+  )
 	set("n", "<leader>ff", function() Snacks.picker.files() end, { desc = "Find Files", })
 	set("n", "<leader>fg", function() Snacks.picker.git_files() end, { desc = "Find Git Files", })
 	set("n", "<leader>fp", function() Snacks.picker.projects() end, { desc = "Projects", })
@@ -155,7 +163,12 @@ Config.later(function()
 	set("n", "<leader>gi", function() Snacks.picker.gh_issue() end, { desc = "GitHub Issues (open)", })
 	set("n", "<leader>gI", function() Snacks.picker.gh_issue({ state = "all" }) end, { desc = "GitHub Issues (all)", })
 	set("n", "<leader>gp", function() Snacks.picker.gh_pr() end, { desc = "GitHub Pull Requests (open)", })
-	set("n", "<leader>gP", function() Snacks.picker.gh_pr({ state = "all" }) end, { desc = "GitHub Pull Requests (all)", })
+	set(
+    "n",
+    "<leader>gP",
+    function() Snacks.picker.gh_pr({ state = "all" }) end,
+    { desc = "GitHub Pull Requests (all)", }
+  )
 	-- Grep
 	set("n", "<leader>sb", function() Snacks.picker.lines() end, { desc = "Buffer Lines", })
 	set("n", "<leader>sB", function() Snacks.picker.grep_buffers() end, { desc = "Grep Open Buffers", })
@@ -176,7 +189,7 @@ Config.later(function()
 	set("n", "<leader>sk", function() Snacks.picker.keymaps() end, { desc = "Keymaps", })
 	set("n", "<leader>sl", function() Snacks.picker.loclist() end, { desc = "Location List", })
 	set("n", "<leader>sm", function() Snacks.picker.marks() end, { desc = "Marks", })
-	set("n", "<leader>sM", function() Snacks.picker.man() end, { desc = "Man Pages", })
+	set("n", "<leader>csm", function() Snacks.picker.man() end, { desc = "Man Pages", })
 	set("n", "<leader>sq", function() Snacks.picker.qflist() end, { desc = "Quickfix List", })
 	set("n", "<leader>sR", function() Snacks.picker.resume() end, { desc = "Resume", })
 	set("n", "<leader>su", function()
@@ -215,7 +228,11 @@ Config.later(function()
 	Snacks.toggle.diagnostics():map("<leader>ud")
 	Snacks.toggle.line_number():map("<leader>ul")
 	Snacks.toggle
-		.option("conceallevel", { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2, name = "Conceal Level" })
+		.option("conceallevel", {
+      off = 0,
+      on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2,
+      name = "Conceal Level",
+    })
 		:map("<leader>uc")
 	-- Replaced by "Toggle AI"
 	-- Snacks.toggle

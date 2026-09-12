@@ -109,7 +109,7 @@ set("x", "<", "<gv", { desc = "Indent Left" })
 set("x", ">", ">gv", { desc = "Indent Right" })
 
 -- Restart Neovim
-set("n", "<leader>ur", "<cmd>restart<cr>", { desc = "Restart Neovim" })
+set("n", "<leader>ur", "<cmd>Restart<cr>", { desc = "Restart Neovim" })
 
 -- TODO: Preserve yanked text from Theprimeagen
 

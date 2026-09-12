@@ -16,6 +16,7 @@ Config.on_event({ "BufReadPre", "BufNewFile" }, function()
 		"https://github.com/nvim-treesitter/nvim-treesitter",
 		"https://github.com/nvim-treesitter/nvim-treesitter-textobjects",
 		"https://github.com/andymass/vim-matchup",
+		"https://github.com/fredrikaverpil/tree-sitter-godoc",
 	})
 
 	local parsers = require("lang").get().treesitter

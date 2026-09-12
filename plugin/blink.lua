@@ -8,6 +8,7 @@ Config.on_event({ "BufReadPre", "BufNewFile" }, function()
 		"https://github.com/saghen/blink.compat",
 		"https://github.com/onsails/lspkind.nvim",
 		"https://github.com/nvim-tree/nvim-web-devicons",
+		"https://github.com/mikavilpas/blink-ripgrep.nvim",
 	})
 
 	require("luasnip").setup({})
@@ -45,9 +46,8 @@ Config.on_event({ "BufReadPre", "BufNewFile" }, function()
 				draw = {
 					treesitter = { "lsp" },
 					columns = {
-						{ "label" },
-						{ "kind_icon", "kind", gap = 1 },
-						{ "source_name" },
+						{ "kind_icon", "label", "label_description", gap = 1 },
+						{ "kind", "source_name", gap = 1 },
 					},
 					components = {
 						kind_icon = {
@@ -101,7 +101,7 @@ Config.on_event({ "BufReadPre", "BufNewFile" }, function()
 			},
 			documentation = {
 				window = { border = border },
-				auto_show = false,
+				auto_show = true,
 				auto_show_delay_ms = 0,
 			},
 		},
@@ -111,7 +111,7 @@ Config.on_event({ "BufReadPre", "BufNewFile" }, function()
 			enabled = true,
 			window = {
 				border = border,
-				show_documentation = false,
+				show_documentation = true,
 				direction_priority = { "n" },
 			},
 		},
@@ -120,18 +120,20 @@ Config.on_event({ "BufReadPre", "BufNewFile" }, function()
 			default = function()
 				if vim.bo.filetype == "lua" then
 					vim.cmd.packadd("lazydev.nvim")
-					return { "lazydev", "lsp", "path", "snippets", "buffer" }
+					return { "lazydev", "lsp", "path", "snippets", "buffer", "ripgrep" }
 				end
 
-				return { "lsp", "path", "snippets", "buffer" }
+				return { "lsp", "path", "snippets", "buffer", "ripgrep" }
 			end,
 			per_filetype = {
 				opencode_ask = { "lsp", "buffer" },
+				sql = {"lsp", "snippets", "buffer" },
 			},
 			providers = {
 				lsp = {
 					name = "LSP",
 					module = "blink.cmp.sources.lsp",
+					score_offset = 90,
 					fallbacks = {},
 					async = true,
 					timeout_ms = 0,
@@ -158,6 +160,7 @@ Config.on_event({ "BufReadPre", "BufNewFile" }, function()
 				snippets = {
 					min_keyword_length = 2,
 					max_items = 5,
+					score_offset = 80,
 					should_show_items = function(ctx)
 						return ctx.trigger.initial_kind ~= "trigger_character"
 					end,
@@ -172,10 +175,24 @@ Config.on_event({ "BufReadPre", "BufNewFile" }, function()
 					module = "blink-cmp-supermaven",
 					async = true,
 				},
+				ripgrep = {
+					module = "blink-ripgrep",
+					name = "Ripgrep",
+					---@module "blink-ripgrep"
+          ---@type blink-ripgrep.Options
+          opts = {
+						backend = {
+							use = "gitgrep-or-ripgrep"
+						},
+					}
+				}
 			},
 		},
 
-		fuzzy = { implementation = "prefer_rust_with_warning", sorts = { "exact", "score", "sort_text" } },
+		fuzzy = {
+			implementation = "prefer_rust_with_warning",
+			sorts = { "exact", "score", "sort_text" },
+		},
 
 		cmdline = {
 			enabled = true,
@@ -196,21 +213,11 @@ Config.on_event({ "BufReadPre", "BufNewFile" }, function()
 		},
 
 		keymap = {
-			preset = "enter",
-
+			preset = "default",
 			["<C-l>"] = { "show", "show_documentation", "hide_documentation", "hide" },
-
 			["<Tab>"] = {
-				function(cmp)
-					if cmp.is_visible() then
-						return cmp.select_next()
-					end
-				end,
+				"select_next",
 				"snippet_forward",
-				---@module 'sidekick'
-				function()
-					return require("sidekick").nes_jump_or_apply()
-				end,
 				function()
 					local preview = require("supermaven-nvim.completion_preview")
 					if preview.has_suggestion() then
@@ -220,20 +227,9 @@ Config.on_event({ "BufReadPre", "BufNewFile" }, function()
 				end,
 				"fallback",
 			},
+			["<CR>"] = {'accept', 'fallback'},
 			["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
-
-			["<C-e>"] = false,
-			-- Map Esc to close the menu if open, otherwise do nothing (leaves Insert mode)
-			["<Esc>"] = {
-				function(cmp)
-					if cmp.is_visible() then
-						cmp.cancel()
-						return true -- Stops execution, keeping you in insert mode
-					end
-					return false -- Passes <Esc> to Neovim, leaving insert mode
-				end,
-				"fallback",
-			},
+			["<Esc>"] = { "cancel", "fallback" },
 		},
 	})
 	require("luasnip.loaders.from_vscode").lazy_load()

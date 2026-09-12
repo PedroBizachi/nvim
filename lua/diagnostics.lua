@@ -12,23 +12,24 @@ vim.diagnostic.config({
 		},
 	},
 
-	virtual_text = {
-		spacing = 4,
-		source = "if_many",
-		-- prefix = "● ",
-		-- this will set set the prefix to a function that returns the diagnostics icon based on the severity
-		prefix = function(diagnostic)
-			local icons = Config.icons.diagnostics
-
-			return ({
-				[vim.diagnostic.severity.ERROR] = " " .. icons.Error,
-				[vim.diagnostic.severity.WARN] = " " .. icons.Warn,
-				[vim.diagnostic.severity.INFO] = " " .. icons.Info,
-				[vim.diagnostic.severity.HINT] = " " .. icons.Hint,
-			})[diagnostic.severity] or "● "
-		end,
-		suffix = " ",
-	},
+  -- Replaced by tiny-inline-diagnostic
+	-- virtual_text = {
+	-- 	spacing = 4,
+	-- 	source = "if_many",
+	-- 	-- prefix = "● ",
+	-- 	-- this will set set the prefix to a function that returns the diagnostics icon based on the severity
+	-- 	prefix = function(diagnostic)
+	-- 		local icons = Config.icons.diagnostics
+	--
+	-- 		return ({
+	-- 			[vim.diagnostic.severity.ERROR] = " " .. icons.Error,
+	-- 			[vim.diagnostic.severity.WARN] = " " .. icons.Warn,
+	-- 			[vim.diagnostic.severity.INFO] = " " .. icons.Info,
+	-- 			[vim.diagnostic.severity.HINT] = " " .. icons.Hint,
+	-- 		})[diagnostic.severity] or "● "
+	-- 	end,
+	-- 	suffix = " ",
+	-- },
 
 	-- Auto open the float, so you can easily read the errors when jumping with `[d` and `]d`
 	jump = {

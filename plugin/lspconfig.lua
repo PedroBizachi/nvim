@@ -6,8 +6,11 @@ Config.on_event({ "BufReadPre", "BufNewFile" }, function()
 		"https://github.com/mason-org/mason.nvim",
 		"https://github.com/mason-org/mason-lspconfig.nvim",
 		"https://github.com/neovim/nvim-lspconfig",
+		"https://github.com/b0o/SchemaStore.nvim",
+		"https://github.com/artemave/workspace-diagnostics.nvim",
 	})
 	require("util.neoconf").setup()
+	require("workspace-diagnostics").setup()
 
 	-- === LSP Configs ===
 

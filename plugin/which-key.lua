@@ -141,6 +141,7 @@ Config.later(function()
 			{ "<leader>t",  group = "test" },
 			{ "<leader>u",  group = "ui" },
 			{ "<leader>x",  group = "diagnostics/quickfix" },
+			{ "<leader>cs", group = "Search Documentation..." },
 			{ "[",          group = "prev" },
 			{ "]",          group = "next" },
 			{ "g",          group = "goto" },
