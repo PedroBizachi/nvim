@@ -184,5 +184,4 @@ Config.later(function()
 		},
 	})
 	wk.add(mini_ai_textobjects())
-	require("colors").apply()
 end)

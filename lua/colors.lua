@@ -1,3 +1,7 @@
+-- Keeping just for tracking, i will now handle hl groups inside the
+-- colorscheme configuration
+if true then return {} end
+
 local M = {}
 
 function M.apply()

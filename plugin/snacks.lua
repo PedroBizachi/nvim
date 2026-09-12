@@ -233,5 +233,4 @@ Config.later(function()
 		Snacks.toggle.inlay_hints():map("<leader>uh")
 	end
 	-- stylua: ignore end
-	require("colors").apply()
 end)

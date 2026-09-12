@@ -18,11 +18,6 @@ Config.on_event({ "BufReadPre", "BufNewFile" }, function()
 		"https://github.com/andymass/vim-matchup",
 	})
 
-	local ok, colors = pcall(require, "colors")
-	if ok then
-		colors.apply()
-	end
-
 	local parsers = require("lang").get().treesitter
 
 	local isnt_installed = function(lang)
