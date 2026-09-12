@@ -76,7 +76,7 @@ Config.later(function()
 	end
 
 	local default_section_mode = statusline.section_mode
-	local neovim_logo = vim.g.have_nerd_font and " " or "NVIM"
+	local neovim_logo = vim.g.have_nerd_font and "" or "NVIM"
 	---@diagnostic disable-next-line: duplicate-set-field
 	statusline.section_mode = function(args)
 		args = args or {}
@@ -172,160 +172,171 @@ Config.later(function()
 	statusline.section_filename = function(args)
 		args = args or {}
 
-		return (vim.fn.expand("%:t") ~= "" and " %t" or "[No Name]") .. "%m%r"
-	end
+		local git_root = vim.fs.root(0, '.git')
 
-	local section_supermaven = function()
-		local ok, api = pcall(require, "supermaven-nvim.api")
-		if not ok or not api.is_running() then
-			return ""
-		end
+		if git_root then
+      local relative_git_path = "./" .. vim.fs.relpath(git_root, vim.fn.expand("%:p"))
+      return (relative_git_path ~= "" and relative_git_path or "%f") .. "%m%r"
+    end
 
-		return color("CmpItemKindSupermaven", Config.icons.kinds.Supermaven)
-	end
-	---@diagnostic disable-next-line: duplicate-set-field
-	statusline.section_fileinfo = function(args)
-		args = args or {}
-		local filetype = vim.bo.filetype
-		if filetype == "" then
-			return ""
-		end
+    return (vim.fn.expand("%:t") ~= "" and vim.fn.expand("%:~") or "[No Name]") .. "%m%r"
+  end
 
-		local filetype_info = filetype
-		if vim.g.have_nerd_font and MiniIcons then
-			local icon, hl = MiniIcons.get("filetype", filetype)
-			filetype_info = color(hl, " ") .. color(hl, icon) .. " " .. filetype
-		end
-		local supermaven = section_supermaven()
+  local section_supermaven = function()
+    local ok, api = pcall(require, "supermaven-nvim.api")
+    if not ok or not api.is_running() then
+      return ""
+    end
 
-		if statusline.is_truncated(args.trunc_width) or vim.bo.buftype ~= "" then
-			return table.concat(
-				vim.tbl_filter(function(item)
-					return item ~= ""
-				end, { supermaven, filetype_info }),
-				" "
-			)
-		end
+    return color("CmpItemKindSupermaven", Config.icons.kinds.Supermaven)
+  end
+  ---@diagnostic disable-next-line: duplicate-set-field
+  statusline.section_fileinfo = function(args)
+    args = args or {}
+    local filetype = vim.bo.filetype
+    if filetype == "" then
+      return ""
+    end
 
-		local venv = ""
-		if vim.bo.filetype == "python" then
-			local ok, vs = pcall(require, "venv-selector")
-			if ok then
-				local path = vs.venv()
-				if path and path ~= "" then
-					venv = "(" .. vim.fn.fnamemodify(path, ":t") .. ")"
-				end
-			end
-		end
+    local filetype_info = filetype
+    if vim.g.have_nerd_font and MiniIcons then
+      local icon, hl = MiniIcons.get("filetype", filetype)
+      filetype_info = color(hl, " ") .. color(hl, icon) .. " " .. filetype
+    end
+    local supermaven = section_supermaven()
 
-		return table.concat(
-			vim.tbl_filter(function(item)
-				return item ~= ""
-			end, { supermaven, filetype_info, venv }),
-			" "
-		)
-	end
+    if statusline.is_truncated(args.trunc_width) or vim.bo.buftype ~= "" then
+      return table.concat(
+        vim.tbl_filter(function(item)
+          return item ~= ""
+        end, { supermaven, filetype_info }),
+        " "
+      )
+    end
 
-	---@diagnostic disable-next-line: duplicate-set-field
-	statusline.section_searchcount = function(args)
-		if vim.v.hlsearch == 0 or statusline.is_truncated(args.trunc_width) then
-			return ""
-		end
-		local ok, s_count = pcall(vim.fn.searchcount, (args or {}).options or { recompute = true })
-		if not ok or s_count.current == nil or s_count.total == 0 then
-			return ""
-		end
+    local venv = ""
+    if vim.bo.filetype == "python" then
+      local ok, vs = pcall(require, "venv-selector")
+      if ok then
+        local path = vs.venv()
+        if path and path ~= "" then
+          venv = "(" .. vim.fn.fnamemodify(path, ":t") .. ")"
+        end
+      end
+    end
 
-		if s_count.incomplete == 1 then
-			return "?/?"
-		end
+    return table.concat(
+      vim.tbl_filter(function(item)
+        return item ~= ""
+      end, { supermaven, filetype_info, venv }),
+      " "
+    )
+  end
 
-		local too_many = ">" .. s_count.maxcount
-		local current = s_count.current > s_count.maxcount and too_many or s_count.current
-		local total = s_count.total > s_count.maxcount and too_many or s_count.total
-		return "[" .. current .. "/" .. total .. "]"
-	end
+  ---@diagnostic disable-next-line: duplicate-set-field
+  statusline.section_searchcount = function(args)
+    if vim.v.hlsearch == 0 or statusline.is_truncated(args.trunc_width) then
+      return ""
+    end
+    local ok, s_count = pcall(vim.fn.searchcount, (args or {}).options or { recompute = true })
+    if not ok or s_count.current == nil or s_count.total == 0 then
+      return ""
+    end
 
-	---@diagnostic disable-next-line: duplicate-set-field
-	statusline.section_location = function()
-		return "%2l:%-2v %p%%:%-L"
-	end
+    if s_count.incomplete == 1 then
+      return "?/?"
+    end
 
-	local function active_statusline()
-		local mode, mode_hl = statusline.section_mode({ trunc_width = 120 })
-		local git = statusline.section_git({ trunc_width = 40 })
-		local diff = statusline.section_diff({ trunc_width = 75 })
-		local diagnostics = statusline.section_diagnostics({ trunc_width = 75 })
-		local lsp = statusline.section_lsp({ trunc_width = 75 })
-		local filename = statusline.section_filename({ trunc_width = 140 })
-		local fileinfo = statusline.section_fileinfo({ trunc_width = 120 })
-		local search = statusline.section_searchcount({ trunc_width = 75 })
-		local location = statusline.section_location({ trunc_width = 75 })
+    local too_many = ">" .. s_count.maxcount
+    local current = s_count.current > s_count.maxcount and too_many or s_count.current
+    local total = s_count.total > s_count.maxcount and too_many or s_count.total
+    return "[" .. current .. "/" .. total .. "]"
+  end
 
-		return statusline.combine_groups({
-			{ hl = mode_hl, strings = { mode } },
-			{ hl = "MiniStatuslineDevinfo", strings = { git, diff } },
-			"%<", -- Mark general truncate point
-			{ hl = "MiniStatuslineFilename", strings = { filename } },
-			"%=", -- End left alignment
-			{ hl = "MiniStatuslineDevinfo", strings = { fileinfo, lsp, diagnostics } },
-			{ hl = mode_hl, strings = { search, location } },
-		})
-	end
+  ---@diagnostic disable-next-line: duplicate-set-field
+  statusline.section_location = function()
+    return "%2l:%-2v %p%%:%-L"
+  end
 
-	statusline.setup({
-		content = {
-			active = active_statusline,
-		},
-		use_icons = vim.g.have_nerd_font,
-	})
-	vim.schedule(bold_statusline_groups)
+  local function active_statusline()
+    local mode, mode_hl = statusline.section_mode({ trunc_width = 120 })
+    local git = statusline.section_git({ trunc_width = 40 })
+    local diff = statusline.section_diff({ trunc_width = 75 })
+    local diagnostics = statusline.section_diagnostics({ trunc_width = 75 })
+    local lsp = statusline.section_lsp({ trunc_width = 75 })
+    local filename = statusline.section_filename({ trunc_width = 140 })
+    local fileinfo = statusline.section_fileinfo({ trunc_width = 120 })
+    local search = statusline.section_searchcount({ trunc_width = 75 })
+    local location = statusline.section_location({ trunc_width = 75 })
 
-	local ai = require("mini.ai")
-	ai.setup({
-		n_lines = 500,
-		mappings = {
-			around = "a",
-			inside = "i",
-			around_next = "an",
-			inside_next = "in",
-			around_last = "al",
-			inside_last = "il",
-		},
-		custom_textobjects = {
-			o = ai.gen_spec.treesitter({
-				a = { "@block.outer", "@conditional.outer", "@loop.outer" },
-				i = { "@block.inner", "@conditional.inner", "@loop.inner" },
-			}),
-			f = ai.gen_spec.treesitter({ a = "@function.outer", i = "@function.inner" }),
-			c = ai.gen_spec.treesitter({ a = "@class.outer", i = "@class.inner" }),
-			t = { "<([%p%w]-)%f[^<%w][^<>]->.-</%1>", "^<.->().*()</[^/]->$" },
-			d = { "%f[%d]%d+" },
-			e = {
-				{
-					"%u[%l%d]+%f[^%l%d]",
-					"%f[%S][%l%d]+%f[^%l%d]",
-					"%f[%P][%l%d]+%f[^%l%d]",
-					"^[%l%d]+%f[^%l%d]",
-				},
-				"^().*()$",
-			},
-			g = function()
-				local from = { line = 1, col = 1 }
-				local to = {
-					line = vim.fn.line("$"),
-					col = math.max(vim.fn.getline("$"):len(), 1),
-				}
+    return statusline.combine_groups({
+      { hl = mode_hl, strings = { mode } },
+      { hl = "MiniStatuslineDevinfo", strings = { git, diff } },
+      "%<", -- Mark general truncate point
+      { hl = "MiniStatuslineFilename", strings = { filename } },
+      "%=", -- End left alignment
+      { hl = "MiniStatuslineDevinfo", strings = { fileinfo, lsp, diagnostics } },
+      { hl = mode_hl, strings = { search, location } },
+    })
+  end
 
-				return { from = from, to = to }
-			end,
-			u = ai.gen_spec.function_call(),
-			U = ai.gen_spec.function_call({ name_pattern = "[%w_]" }),
-		},
-	})
+  statusline.setup({
+    content = {
+      active = active_statusline,
+    },
+    use_icons = vim.g.have_nerd_font,
+  })
+  vim.schedule(bold_statusline_groups)
 
-	require("mini.tabline").setup()
-	require("mini.files").setup()
-	require("colors").apply()
-	bold_statusline_groups()
+  local ai = require("mini.ai")
+  ai.setup({
+    n_lines = 500,
+    mappings = {
+      around = "a",
+      inside = "i",
+      around_next = "an",
+      inside_next = "in",
+      around_last = "al",
+      inside_last = "il",
+    },
+    custom_textobjects = {
+      o = ai.gen_spec.treesitter({
+        a = { "@block.outer", "@conditional.outer", "@loop.outer" },
+        i = { "@block.inner", "@conditional.inner", "@loop.inner" },
+      }),
+      f = ai.gen_spec.treesitter({ a = "@function.outer", i = "@function.inner" }),
+      c = ai.gen_spec.treesitter({ a = "@class.outer", i = "@class.inner" }),
+      t = { "<([%p%w]-)%f[^<%w][^<>]->.-</%1>", "^<.->().*()</[^/]->$" },
+      d = { "%f[%d]%d+" },
+      e = {
+        {
+          "%u[%l%d]+%f[^%l%d]",
+          "%f[%S][%l%d]+%f[^%l%d]",
+          "%f[%P][%l%d]+%f[^%l%d]",
+          "^[%l%d]+%f[^%l%d]",
+        },
+        "^().*()$",
+      },
+      g = function()
+        local from = { line = 1, col = 1 }
+        local to = {
+          line = vim.fn.line("$"),
+          col = math.max(vim.fn.getline("$"):len(), 1),
+        }
+
+        return { from = from, to = to }
+      end,
+      u = ai.gen_spec.function_call(),
+      U = ai.gen_spec.function_call({ name_pattern = "[%w_]" }),
+    },
+  })
+
+  require("mini.surround").setup()
+  require("mini.tabline").setup()
+  require("mini.files").setup({
+    options = {
+      use_as_default_explorer = false,
+    },
+  })
+  bold_statusline_groups()
 end)
