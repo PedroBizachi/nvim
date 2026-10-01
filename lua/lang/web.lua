@@ -41,5 +41,9 @@ return {
 		typescriptreact = true,
 		yaml = true,
 	},
-	test_runners = { "marilari88/neotest-vitest", "nvim-neotest/neotest-jest" },
+	test_runners = {
+		"marilari88/neotest-vitest",
+		"nvim-neotest/neotest-jest",
+		"nvim-neotest/neotest-nodejs",
+	},
 }
