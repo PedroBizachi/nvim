@@ -1,4 +1,5 @@
 -- stylua: ignore start
+-- NOTE: Python misc plugins
 Config.on_filetype("python", function(ev)
 	vim.pack.add({ "https://github.com/linux-cultist/venv-selector.nvim" })
 
@@ -35,25 +36,138 @@ Config.on_filetype("python", function(ev)
 	})
 end)
 
-Config.on_event({ "BufReadPost", "BufNewFile" }, function()
-	vim.pack.add({ "https://github.com/folke/todo-comments.nvim" })
-	vim.pack.add({ "https://github.com/NMAC427/guess-indent.nvim" })
+-- NOTE: Lua misc plugins
+Config.on_filetype("lua", function()
+	vim.pack.add({ "https://github.com/folke/lazydev.nvim" })
 
-	require("todo-comments").setup({})
+	require("lazydev").setup({
+		library = {
+			{ path = "${3rd}/luv/library", words = { "vim%.uv" } },
+			{ path = "snacks.nvim", words = { "Snacks" } },
+			{ path = "nvim-lspconfig", words = { "lspconfig.settings" } },
+		},
+	})
+end)
+
+-- NOTE: Misc by event
+Config.on_event({ "BufReadPost", "BufNewFile" }, function()
+	vim.pack.add({
+		"https://github.com/NMAC427/guess-indent.nvim",
+		"https://github.com/lewis6991/gitsigns.nvim",
+		"https://github.com/MeanderingProgrammer/render-markdown.nvim",
+		"https://github.com/nvim-tree/nvim-web-devicons",
+	})
+
+	require("render-markdown").setup({
+		file_types = { "markdown" },
+	})
+
+	vim.g.render_markdown_enabled = vim.g.render_markdown_enabled ~= false
+
+	Config.later(function()
+		Snacks.toggle({
+			name = "Markdown Render",
+			get = function()
+				return vim.g.render_markdown_enabled ~= false
+			end,
+			set = function(state)
+				vim.g.render_markdown_enabled = state
+				vim.cmd("RenderMarkdown " .. (state and "enable" or "disable"))
+			end,
+		}):map("<leader>um")
+
+		Snacks.toggle({
+			name = "Markdown Render (Buffer)",
+			get = function()
+				return vim.b.render_markdown_enabled ~= false
+			end,
+			set = function(state)
+				vim.b.render_markdown_enabled = state
+				vim.cmd("RenderMarkdown " .. (state and "buf_enable" or "buf_disable"))
+			end,
+		}):map("<leader>uM")
+	end)
 
 	require("guess-indent").setup({})
 
-	local set = vim.keymap.set
+	-- Gitsigns config
+	require("gitsigns").setup({
+    current_line_blame = true,
+		signs = {
+			add = { text = "▎" },
+			change = { text = "▎" },
+			delete = { text = "" },
+			topdelete = { text = "" },
+			changedelete = { text = "▎" },
+			untracked = { text = "▎" },
+		},
+		signs_staged = {
+			add = { text = "▎" },
+			change = { text = "▎" },
+			delete = { text = "" },
+			topdelete = { text = "" },
+			changedelete = { text = "▎" },
+		},
+	})
 
-	-- stylua: ignore start
-	set({ "n" }, "]t", function() require("todo-comments").jump_next() end, { desc = "Next Todo" })
-	set({ "n" }, "[t", function() require("todo-comments").jump_prev() end, { desc = "Prev Todo" })
-	set("n", "<leader>st", function() Snacks.picker.todo_comments() end, { desc = "Todo" })
-	set("n", "<leader>sT", function()
-    Snacks.picker.todo_comments({ keywords = { "TODO", "FIX", "FIXME" }})
-  end, { desc = "Todo/Fix/Fixme" })
+	Config.later(function()
+		Snacks.toggle({
+			name = "Git Signs",
+			get = function()
+				return require("gitsigns.config").config.signcolumn
+			end,
+			set = function(state)
+				require("gitsigns").toggle_signs(state)
+			end,
+		}):map("<leader>uG")
+	end)
+
+	-- keymaps
+	local gs = package.loaded.gitsigns
+
+	local function map(mode, l, r, desc)
+		vim.keymap.set(mode, l, r, { desc = desc, silent = true })
+	end
+	map("n", "]h", function()
+		if vim.wo.diff then
+			vim.cmd.normal({ "]c", bang = true })
+		else
+			gs.nav_hunk("next")
+		end
+	end, "Next Hunk")
+	map("n", "[h", function()
+		if vim.wo.diff then
+			vim.cmd.normal({ "[c", bang = true })
+		else
+			gs.nav_hunk("prev")
+		end
+	end, "Prev Hunk")
+	map("n", "]H", function()
+		gs.nav_hunk("last")
+	end, "Last Hunk")
+	map("n", "[H", function()
+		gs.nav_hunk("first")
+	end, "First Hunk")
+	map({ "n", "x" }, "<leader>ghs", ":Gitsigns stage_hunk<CR>", "Stage Hunk")
+	map({ "n", "x" }, "<leader>ghr", ":Gitsigns reset_hunk<CR>", "Reset Hunk")
+	map("n", "<leader>ghS", gs.stage_buffer, "Stage Buffer")
+	map("n", "<leader>ghu", gs.undo_stage_hunk, "Undo Stage Hunk")
+	map("n", "<leader>ghR", gs.reset_buffer, "Reset Buffer")
+	map("n", "<leader>ghp", gs.preview_hunk_inline, "Preview Hunk Inline")
+	map("n", "<leader>ghb", function()
+		gs.blame_line({ full = true })
+	end, "Blame Line")
+	map("n", "<leader>ghB", function()
+		gs.blame()
+	end, "Blame Buffer")
+	map("n", "<leader>ghd", gs.diffthis, "Diff This")
+	map("n", "<leader>ghD", function()
+		gs.diffthis("~")
+	end, "Diff This ~")
+	map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "GitSigns Select Hunk")
 end)
 
+-- NOTE: Misc by later call
 Config.later(function()
 	vim.pack.add({
 		"https://github.com/dstein64/vim-startuptime",
@@ -176,132 +290,7 @@ Config.later(function()
   set({ "o", "x" }, "R", function() flash.treesitter_search() end, { desc = "Treesitter Search" })
 end)
 
-Config.on_event({ "BufReadPost", "BufNewFile" }, function()
-	vim.pack.add({ "https://github.com/lewis6991/gitsigns.nvim" })
-	require("gitsigns").setup({
-		signs = {
-			add = { text = "▎" },
-			change = { text = "▎" },
-			delete = { text = "" },
-			topdelete = { text = "" },
-			changedelete = { text = "▎" },
-			untracked = { text = "▎" },
-		},
-		signs_staged = {
-			add = { text = "▎" },
-			change = { text = "▎" },
-			delete = { text = "" },
-			topdelete = { text = "" },
-			changedelete = { text = "▎" },
-		},
-	})
-
-	Config.later(function()
-		Snacks.toggle({
-			name = "Git Signs",
-			get = function()
-				return require("gitsigns.config").config.signcolumn
-			end,
-			set = function(state)
-				require("gitsigns").toggle_signs(state)
-			end,
-		}):map("<leader>uG")
-	end)
-
-	-- keymaps
-	local gs = package.loaded.gitsigns
-
-	local function map(mode, l, r, desc)
-		vim.keymap.set(mode, l, r, { desc = desc, silent = true })
-	end
-	map("n", "]h", function()
-		if vim.wo.diff then
-			vim.cmd.normal({ "]c", bang = true })
-		else
-			gs.nav_hunk("next")
-		end
-	end, "Next Hunk")
-	map("n", "[h", function()
-		if vim.wo.diff then
-			vim.cmd.normal({ "[c", bang = true })
-		else
-			gs.nav_hunk("prev")
-		end
-	end, "Prev Hunk")
-	map("n", "]H", function()
-		gs.nav_hunk("last")
-	end, "Last Hunk")
-	map("n", "[H", function()
-		gs.nav_hunk("first")
-	end, "First Hunk")
-	map({ "n", "x" }, "<leader>ghs", ":Gitsigns stage_hunk<CR>", "Stage Hunk")
-	map({ "n", "x" }, "<leader>ghr", ":Gitsigns reset_hunk<CR>", "Reset Hunk")
-	map("n", "<leader>ghS", gs.stage_buffer, "Stage Buffer")
-	map("n", "<leader>ghu", gs.undo_stage_hunk, "Undo Stage Hunk")
-	map("n", "<leader>ghR", gs.reset_buffer, "Reset Buffer")
-	map("n", "<leader>ghp", gs.preview_hunk_inline, "Preview Hunk Inline")
-	map("n", "<leader>ghb", function()
-		gs.blame_line({ full = true })
-	end, "Blame Line")
-	map("n", "<leader>ghB", function()
-		gs.blame()
-	end, "Blame Buffer")
-	map("n", "<leader>ghd", gs.diffthis, "Diff This")
-	map("n", "<leader>ghD", function()
-		gs.diffthis("~")
-	end, "Diff This ~")
-	map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "GitSigns Select Hunk")
-end)
-
-Config.on_event({ "BufReadPost", "BufNewFile" }, function()
-	vim.pack.add({
-		"https://github.com/MeanderingProgrammer/render-markdown.nvim",
-		"https://github.com/nvim-tree/nvim-web-devicons",
-	})
-
-	require("render-markdown").setup({
-		file_types = { "markdown" },
-	})
-
-	vim.g.render_markdown_enabled = vim.g.render_markdown_enabled ~= false
-
-	Config.later(function()
-		Snacks.toggle({
-			name = "Markdown Render",
-			get = function()
-				return vim.g.render_markdown_enabled ~= false
-			end,
-			set = function(state)
-				vim.g.render_markdown_enabled = state
-				vim.cmd("RenderMarkdown " .. (state and "enable" or "disable"))
-			end,
-		}):map("<leader>um")
-
-		Snacks.toggle({
-			name = "Markdown Render (Buffer)",
-			get = function()
-				return vim.b.render_markdown_enabled ~= false
-			end,
-			set = function(state)
-				vim.b.render_markdown_enabled = state
-				vim.cmd("RenderMarkdown " .. (state and "buf_enable" or "buf_disable"))
-			end,
-		}):map("<leader>uM")
-	end)
-end)
-
-Config.on_filetype("lua", function()
-	vim.pack.add({ "https://github.com/folke/lazydev.nvim" })
-
-	require("lazydev").setup({
-		library = {
-			{ path = "${3rd}/luv/library", words = { "vim%.uv" } },
-			{ path = "snacks.nvim", words = { "Snacks" } },
-			{ path = "nvim-lspconfig", words = { "lspconfig.settings" } },
-		},
-	})
-end)
-
+-- NOTE: Dial plugin large config
 Config.on_event({ "BufReadPost", "BufNewFile" }, function()
 	vim.pack.add({ "https://github.com/monaqa/dial.nvim" })
 
@@ -459,6 +448,7 @@ Config.on_event({ "BufReadPost", "BufNewFile" }, function()
 	end, { desc = "Decrement" })
 end)
 
+-- NOTE: AI Stuff
 Config.on_event({ "BufReadPre", "BufNewFile" }, function()
 	vim.pack.add({
 		"https://github.com/folke/sidekick.nvim",

@@ -4,6 +4,7 @@ Config.later(function()
 		"https://github.com/mbbill/undotree",
 		"https://github.com/smjonas/inc-rename.nvim",
 		"https://github.com/folke/trouble.nvim",
+		{ src = "https://github.com/folke/todo-comments.nvim", version = "*" },
 	})
 
 	Config.on_event({ "BufReadPost", "BufReadPre", "BufNewFile" }, function()
@@ -27,6 +28,8 @@ Config.later(function()
 
 	-- Better LSP renaming
 	require("inc_rename").setup({})
+
+	require("todo-comments").setup({})
 
 	---@type snacks.picker
 	local picker_actions = vim.tbl_extend("force", require("trouble.sources.snacks").actions, {
@@ -198,6 +201,12 @@ Config.later(function()
 			vim.cmd.UndotreeToggle()
 		end
 	end, { desc = "Undo History", })
+	set("n", "<leader>st", function() Snacks.picker.todo_comments() end, { desc = "Todo" })
+	set("n", "<leader>sT", function()
+    Snacks.picker.todo_comments({ keywords = { "TODO", "FIX", "FIXME" }})
+  end, { desc = "Todo/Fix/Fixme" })
+	set({ "n" }, "]t", function() require("todo-comments").jump_next() end, { desc = "Next Todo" })
+	set({ "n" }, "[t", function() require("todo-comments").jump_prev() end, { desc = "Prev Todo" })
 	set("n", "<leader>uC", function() Snacks.picker.colorschemes() end, { desc = "Colorschemes", })
 	-- LSP
 	set("n", "<leader>ss", function() Snacks.picker.lsp_symbols() end, { desc = "LSP Symbols", })

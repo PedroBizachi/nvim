@@ -223,7 +223,8 @@
     },
     "todo-comments.nvim": {
       "rev": "31e3c38ce9b29781e4422fc0322eb0a21f4e8668",
-      "src": "https://github.com/folke/todo-comments.nvim"
+      "src": "https://github.com/folke/todo-comments.nvim",
+      "version": "'*'"
     },
     "tree-sitter-godoc": {
       "rev": "d12a20fe9f9b4e9c604937d3e66193c33587b4fd",
