@@ -28,10 +28,6 @@
       "rev": "fd9a48ebbe6ec30d5dfcc5b42c243941ccdca1aa",
       "src": "https://github.com/saghen/blink.lib"
     },
-    "carvion.nvim": {
-      "rev": "a5a120d535b83fec5b08efab2557effbc2f34602",
-      "src": "https://github.com/zitrocode/carvion.nvim"
-    },
     "colorful-winsep.nvim": {
       "rev": "6134b5cd4a38990c7b720adc90973ed32f726179",
       "src": "https://github.com/nvim-zh/colorful-winsep.nvim"
