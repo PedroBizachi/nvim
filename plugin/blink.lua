@@ -127,7 +127,7 @@ Config.on_event({ "BufReadPre", "BufNewFile" }, function()
 			end,
 			per_filetype = {
 				opencode_ask = { "lsp", "buffer" },
-				sql = {"lsp", "snippets", "buffer" },
+				sql = { "lsp", "snippets", "buffer" },
 			},
 			providers = {
 				lsp = {
@@ -179,13 +179,13 @@ Config.on_event({ "BufReadPre", "BufNewFile" }, function()
 					module = "blink-ripgrep",
 					name = "Ripgrep",
 					---@module "blink-ripgrep"
-          ---@type blink-ripgrep.Options
-          opts = {
+					---@type blink-ripgrep.Options
+					opts = {
 						backend = {
-							use = "gitgrep-or-ripgrep"
+							use = "gitgrep-or-ripgrep",
 						},
-					}
-				}
+					},
+				},
 			},
 		},
 
@@ -227,7 +227,7 @@ Config.on_event({ "BufReadPre", "BufNewFile" }, function()
 				end,
 				"fallback",
 			},
-			["<CR>"] = {'accept', 'fallback'},
+			["<CR>"] = { "accept", "fallback" },
 			["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
 			["<Esc>"] = { "cancel", "fallback" },
 		},
