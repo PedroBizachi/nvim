@@ -205,14 +205,14 @@ Config.later(function()
 
   require("smartcolumn").setup({
     colorcolumn = "80",
-   disabled_filetypes = { "NvimTree", "lazy", "mason", "help", "checkhealth", "lspinfo", "noice", "Trouble", "fish", "zsh"},
-   -- TODO: Pass a function to get local project line width configuration
-   custom_colorcolumn = {
-       lua = "120",
-       python = "88",
-   },
-   scope = "file",
-   editorconfig = true,
+    disabled_filetypes = { "NvimTree", "lazy", "mason", "help", "checkhealth", "lspinfo", "noice", "Trouble", "fish", "zsh"},
+    -- TODO: Pass a function to get local project line width configuration
+    custom_colorcolumn = {
+      lua = "120",
+      python = "88",
+    },
+    scope = "file",
+    editorconfig = true,
   })
 
 	require("chainsaw").setup()
