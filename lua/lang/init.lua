@@ -38,6 +38,7 @@ local modules = {
 	"lang.git",
 	"lang.toml",
 	"lang.go",
+	"lang.qml",
 }
 
 local extend_unique = function(dst, src)
