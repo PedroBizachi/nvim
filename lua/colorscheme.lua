@@ -20,7 +20,8 @@ require("rose-pine").setup({
 		BlinkCmpMenu = { bg = "base" },
 		BlinkCmpDoc = { bg = "none" },
 		BlinkCmpDocSeparator = { bg = "none" },
-		Folded = { fg = "muted", bg = "none" }
-	}
+		BlinkCmpMenuSelection = { bg = "highlight_med", fg = "none" },
+		Folded = { fg = "muted", bg = "none" },
+	},
 })
 vim.cmd.colorscheme("rose-pine")
