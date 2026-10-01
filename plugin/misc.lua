@@ -183,6 +183,7 @@ Config.later(function()
 		"https://github.com/j-hui/fidget.nvim",
 		"https://github.com/fredrikaverpil/godoc.nvim",
 		"https://github.com/olexsmir/gopher.nvim",
+		"https://github.com/danymat/neogen",
 	})
 
 	local set = vim.keymap.set
@@ -202,6 +203,14 @@ Config.later(function()
       }
     }
   })
+
+  require('neogen').setup({
+    snippet_engine = "luasnip"
+  })
+
+  set("n", "<leader>cn", function ()
+    require('neogen').generate()
+  end, { desc = "Gerenate Annotations (Neogen)" })
 
   require("smartcolumn").setup({
     colorcolumn = "80",

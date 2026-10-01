@@ -109,6 +109,10 @@
       "rev": "931000cfab0120191ee914afbbc3f2b02f3533de",
       "src": "https://github.com/folke/neoconf.nvim"
     },
+    "neogen": {
+      "rev": "23e7e9f883d01289ebd90e98025acc860ea26366",
+      "src": "https://github.com/danymat/neogen"
+    },
     "neotest": {
       "rev": "27bf921498043f7ecd821d6db68d05de244bbd02",
       "src": "https://github.com/nvim-neotest/neotest"
