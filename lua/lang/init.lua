@@ -39,6 +39,7 @@ local modules = {
 	"lang.toml",
 	"lang.go",
 	"lang.qml",
+	"lang.c",
 }
 
 local extend_unique = function(dst, src)
