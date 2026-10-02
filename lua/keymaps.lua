@@ -112,6 +112,7 @@ set("x", ">", ">gv", { desc = "Indent Right" })
 set("n", "<leader>ur", "<cmd>Restart<cr>", { desc = "Restart Neovim" })
 
 -- TODO: Preserve yanked text from Theprimeagen
+set("x", "<leader>p", '\\"_dP', { desc = "paste preserving the content" })
 
 -- Yank line and paste above/below
 set("n", "<M-J>", "yyp",                 { desc = "Duplicate line below" })
