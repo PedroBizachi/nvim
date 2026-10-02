@@ -173,14 +173,17 @@ Config.later(function()
 		args = args or {}
 
 		local git_root = vim.fs.root(0, '.git')
+		local filename = vim.fn.expand("%:p")
 
 		if git_root then
-      local relative_git_path = "./" .. vim.fs.relpath(git_root, vim.fn.expand("%:p"))
-      return (relative_git_path ~= "" and relative_git_path or "%f") .. "%m%r"
-    end
+			local relative_git_path = vim.fs.relpath(git_root, filename)
+			if relative_git_path then
+				return (relative_git_path ~= "" and "./" .. relative_git_path or "%f") .. "%m%r"
+			end
+		end
 
-    return (vim.fn.expand("%:t") ~= "" and vim.fn.expand("%:~") or "[No Name]") .. "%m%r"
-  end
+		return (vim.fn.expand("%:t") ~= "" and vim.fn.expand("%:~") or "[No Name]") .. "%m%r"
+	end
 
   local section_supermaven = function()
     local ok, api = pcall(require, "supermaven-nvim.api")
