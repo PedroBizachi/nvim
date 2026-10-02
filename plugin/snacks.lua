@@ -15,15 +15,15 @@ Config.later(function()
 		local set = vim.keymap.set
 
 		-- stylua: ignore start
-		set("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", { desc = "Diagnostics (Trouble)" })
+		set("n", "<leader>cxx", "<cmd>Trouble diagnostics toggle<cr>", { desc = "Diagnostics (Trouble)" })
 		set(
       "n",
-      "<leader>xX",
+      "<leader>cxX",
       "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
       { desc = "Buffer Diagnostics (Trouble)" }
     )
-		set("n", "<leader>xL", "<cmd>Trouble loclist toggle<cr>", { desc = "Location List (Trouble)" })
-		set("n", "<leader>xq", "<cmd>Trouble qflist toggle<cr>", { desc = "Quickfix List (Trouble)" })
+		set("n", "<leader>cxL", "<cmd>Trouble loclist toggle<cr>", { desc = "Location List (Trouble)" })
+		set("n", "<leader>cxq", "<cmd>Trouble qflist toggle<cr>", { desc = "Quickfix List (Trouble)" })
 	end)
 
 	-- Better LSP renaming
@@ -211,7 +211,7 @@ Config.later(function()
 	-- LSP
 	set("n", "<leader>ss", function() Snacks.picker.lsp_symbols() end, { desc = "LSP Symbols", })
 	set("n", "<leader>sS", function() Snacks.picker.lsp_workspace_symbols() end, { desc = "LSP Workspace Symbols", })
-	set({"n"}, "<leader>xl", vim.diagnostic.open_float, {desc = "Line Diagnostics" })
+	set({"n"}, "<leader>cxl", vim.diagnostic.open_float, {desc = "Line Diagnostics" })
 
 	Snacks.toggle({
 		name = "Format on Save",
