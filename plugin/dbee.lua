@@ -11,5 +11,5 @@ Config.later(function()
 	local set = vim.keymap.set
 
   -- stylua: ignore start
-  set({"n", "x"}, "<leader>db", function() require("dbee").toggle() end, { desc = "Open database client" })
+  set({"n", "x"}, "<leader>db", "<cmd>Dbee<cr>", { desc = "Open database client" })
 end)
