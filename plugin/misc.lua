@@ -252,7 +252,6 @@ Config.later(function()
 		"https://github.com/dstein64/vim-startuptime",
 		"https://github.com/folke/flash.nvim",
 		"https://github.com/nvim-zh/colorful-winsep.nvim",
-		"https://github.com/atiladefreitas/dooing",
 		"https://github.com/chrisgrieser/nvim-chainsaw",
 		"https://github.com/wansmer/treesj",
 		"https://github.com/mawkler/modicator.nvim",
@@ -317,14 +316,6 @@ Config.later(function()
 	set({ "n", "v", "x" }, "<leader>ls", function() chainsaw.stacktraceLog() end, { desc = "Print stacktrace" })
 	set({ "n", "v", "x" }, "<leader>lc", function() chainsaw.clearLog() end, { desc = "Clear console" })
 	set({ "n", "v", "x" }, "<leader>lr", function() chainsaw.removeLogs() end, { desc = "🛑 Delete logs" })
-
-	require("dooing").setup({
-		pretty_print_json = true,
-		per_project = {
-			default_filename = "tasks.json", -- Default filename for project todos
-			auto_gitignore = true, -- Auto-add to .gitignore (true/false/"prompt")
-		},
-	})
 
 	require("modicator").setup()
 
