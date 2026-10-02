@@ -126,6 +126,7 @@ Config.later(function()
 				{ pattern = "redraw", icon = " ", color = "cyan" },
 				{ pattern = "lua", cat = "filetype", name = "lua" },
 				{ pattern = "todo", icon = " ", color = "orange" },
+				{ pattern = "database", icon = " ", color = "yellow" },
 			},
 		},
 		spec = {
@@ -148,7 +149,8 @@ Config.later(function()
 			{ "<leader>RS", desc = "Show REST Stats", mode = "n", cond = is_http },
 			{ "<leader>Rt", desc = "Toggle REST Headers/Body", mode = "n", cond = is_http },
 			{ "<leader>c",  group = "code" },
-			{ "<leader>cd",  group = "debug" },
+			{ "<leader>d",  group = "database" },
+			{ "<leader>cd", group = "debug" },
 			{ "<leader>dp", group = "profiler" },
 			{ "<leader>f",  group = "file/find" },
 			{ "<leader>fm", group = "format" },

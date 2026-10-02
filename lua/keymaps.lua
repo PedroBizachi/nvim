@@ -41,9 +41,6 @@ set("n", "<leader>bD", "<cmd>:bd<cr>",                              { desc = "De
 set("n", "<leader>e", function() MiniFiles.open() end,                                    { silent = true, desc = "File explorer" })
 set("n", "<leader>E", function() MiniFiles.open(vim.api.nvim_buf_get_name(0), false) end, { silent = true, desc = "File explorer in current directory" })
 
--- === LSP ===
-set("n", "<leader>xx", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
-
 -- === QoL ===
 
 -- lazygit

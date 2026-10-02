@@ -211,7 +211,7 @@ Config.later(function()
 	-- LSP
 	set("n", "<leader>ss", function() Snacks.picker.lsp_symbols() end, { desc = "LSP Symbols", })
 	set("n", "<leader>sS", function() Snacks.picker.lsp_workspace_symbols() end, { desc = "LSP Workspace Symbols", })
-	set({"n"}, "<leader>dl", vim.diagnostic.open_float, {desc = "Line Diagnostics" })
+	set({"n"}, "<leader>xl", vim.diagnostic.open_float, {desc = "Line Diagnostics" })
 
 	Snacks.toggle({
 		name = "Format on Save",
