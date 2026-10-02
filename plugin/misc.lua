@@ -49,6 +49,53 @@ Config.on_filetype("lua", function()
 	})
 end)
 
+-- NOTE: HTTP request client
+Config.later(function()
+  vim.pack.add({ "https://github.com/mistweaverco/kulala.nvim" })
+
+  require("kulala").setup({})
+
+	vim.keymap.set("n", "<leader>Rb", function()
+		require("kulala").scratchpad()
+	end, { desc = "Open REST Scratchpad" })
+
+	vim.keymap.set("n", "<leader>Rr", function()
+		require("kulala").replay()
+	end, { desc = "Replay Last REST Request" })
+end)
+
+Config.on_filetype("http", function(ev)
+
+	local function set_kulala_keymaps(buf)
+		local set = vim.keymap.set
+		local function map(lhs, rhs, desc)
+			set("n", lhs, rhs, { buffer = buf, desc = desc })
+		end
+
+		map("<leader>Rc", function() require("kulala").copy() end, "Copy as cURL")
+		map("<leader>RC", function() require("kulala").from_curl() end, "Paste from cURL")
+		map("<leader>Re", function() require("kulala").set_selected_env() end, "Set Environment")
+		map("<leader>Rg", function() require("kulala").download_graphql_schema() end, "Download GraphQL Schema")
+		map("<leader>Ri", function() require("kulala").inspect() end, "Inspect Current Request")
+		map("<leader>Rn", function() require("kulala").jump_next() end, "Jump to Next Request")
+		map("<leader>Rp", function() require("kulala").jump_prev() end, "Jump to Previous Request")
+		map("<leader>Rq", function() require("kulala").close() end, "Close REST Window")
+		map("<leader>Rs", function() require("kulala").run() end, "Send REST Request")
+		map("<leader>RS", function() require("kulala").show_stats() end, "Show REST Stats")
+		map("<leader>Rt", function() require("kulala").toggle_view() end, "Toggle REST Headers/Body")
+	end
+
+	set_kulala_keymaps(ev.buf)
+
+	vim.api.nvim_create_autocmd("FileType", {
+		group = vim.api.nvim_create_augroup("bizak_kulala_keymaps", { clear = true }),
+		pattern = "http",
+		callback = function(event)
+			set_kulala_keymaps(event.buf)
+		end,
+	})
+end)
+
 -- NOTE: Misc by event
 Config.on_event({ "BufReadPost", "BufNewFile" }, function()
 	vim.pack.add({

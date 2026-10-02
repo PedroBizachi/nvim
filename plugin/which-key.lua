@@ -60,6 +60,10 @@ Config.later(function()
 		return #vim.lsp.get_clients({ bufnr = 0 }) > 0
 	end
 
+	local is_http = function()
+		return vim.bo.filetype == "http"
+	end
+
 	local lsp_key = function(lhs, desc)
 		return { lhs, desc = desc, icon = ft_icon, cond = has_lsp }
 	end
@@ -116,6 +120,8 @@ Config.later(function()
 				{ pattern = "duplicate", icon = " ", color = "orange" },
 				{ pattern = "indent", icon = "󰉶 ", color = "purple" },
 				{ pattern = "open", icon = "󰏋 ", color = "blue" },
+				{ pattern = "paste", icon = " ", color = "blue" },
+				{ pattern = "yank", icon = " ", color = "orange" },
 				{ pattern = "restart", icon = "󰑓 ", color = "orange" },
 				{ pattern = "redraw", icon = " ", color = "cyan" },
 				{ pattern = "lua", cat = "filetype", name = "lua" },
@@ -128,6 +134,19 @@ Config.later(function()
 			{ "<leader>l",  group = "log" },
 			{ "<leader>a",  group = "ai" },
 			{ "<leader>R",  group = "rest" },
+			{ "<leader>Rb", desc = "Open REST Scratchpad", mode = "n" },
+			{ "<leader>Rr", desc = "Replay Last REST Request", mode = "n" },
+			{ "<leader>Rc", desc = "Copy as cURL", mode = "n", cond = is_http },
+			{ "<leader>RC", desc = "Paste from cURL", mode = "n", cond = is_http },
+			{ "<leader>Re", desc = "Set Environment", mode = "n", cond = is_http },
+			{ "<leader>Rg", desc = "Download GraphQL Schema", mode = "n", cond = is_http },
+			{ "<leader>Ri", desc = "Inspect Current Request", mode = "n", cond = is_http },
+			{ "<leader>Rn", desc = "Jump to Next Request", mode = "n", cond = is_http },
+			{ "<leader>Rp", desc = "Jump to Previous Request", mode = "n", cond = is_http },
+			{ "<leader>Rq", desc = "Close REST Window", mode = "n", cond = is_http },
+			{ "<leader>Rs", desc = "Send REST Request", mode = "n", cond = is_http },
+			{ "<leader>RS", desc = "Show REST Stats", mode = "n", cond = is_http },
+			{ "<leader>Rt", desc = "Toggle REST Headers/Body", mode = "n", cond = is_http },
 			{ "<leader>c",  group = "code" },
 			{ "<leader>d",  group = "debug" },
 			{ "<leader>dp", group = "profiler" },
@@ -145,6 +164,24 @@ Config.later(function()
 			{ "[",          group = "prev" },
 			{ "]",          group = "next" },
 			{ "g",          group = "goto" },
+			{ "y", desc = "Yank Text", mode = { "n", "x" } },
+			{ "p", desc = "Put Text After Cursor", mode = { "n", "x" } },
+			{ "P", desc = "Put Text Before Cursor", mode = { "n", "x" } },
+			{ "gp", desc = "Put Text After Selection", mode = { "n", "x" } },
+			{ "gP", desc = "Put Text Before Selection", mode = { "n", "x" } },
+			{ "[y", desc = "Cycle Forward Through Yank History" },
+			{ "]y", desc = "Cycle Backward Through Yank History" },
+			{ "]p", desc = "Put Indented After Cursor (Linewise)" },
+			{ "[p", desc = "Put Indented Before Cursor (Linewise)" },
+			{ "]P", desc = "Put Indented After Cursor (Linewise)" },
+			{ "[P", desc = "Put Indented Before Cursor (Linewise)" },
+			{ ">p", desc = "Put and Indent Right" },
+			{ "<p", desc = "Put and Indent Left" },
+			{ ">P", desc = "Put Before and Indent Right" },
+			{ "<P", desc = "Put Before and Indent Left" },
+			{ "=p", desc = "Put After Applying a Filter" },
+			{ "=P", desc = "Put Before Applying a Filter" },
+			{ "<leader>p", desc = "Yank History", mode = { "n", "x" } },
 			lsp_key("gd", "Goto Definition"),
 			lsp_key("gD", "Goto Declaration"),
 			lsp_key("gr", "References"),
