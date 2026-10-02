@@ -148,7 +148,7 @@ Config.later(function()
 			{ "<leader>RS", desc = "Show REST Stats", mode = "n", cond = is_http },
 			{ "<leader>Rt", desc = "Toggle REST Headers/Body", mode = "n", cond = is_http },
 			{ "<leader>c",  group = "code" },
-			{ "<leader>d",  group = "debug" },
+			{ "<leader>cd",  group = "debug" },
 			{ "<leader>dp", group = "profiler" },
 			{ "<leader>f",  group = "file/find" },
 			{ "<leader>fm", group = "format" },
