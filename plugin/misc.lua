@@ -56,7 +56,39 @@ Config.on_event({ "BufReadPost", "BufNewFile" }, function()
 		"https://github.com/lewis6991/gitsigns.nvim",
 		"https://github.com/MeanderingProgrammer/render-markdown.nvim",
 		"https://github.com/nvim-tree/nvim-web-devicons",
+		"https://github.com/gbprod/yanky.nvim",
 	})
+
+	require("yanky").setup({
+		system_clipboard = {
+			sync_with_ring = not vim.env.SSH_CONNECTION,
+		},
+		highlight = { timer = 150 },
+	})
+
+	local set = vim.keymap.set
+
+	-- stylua: ignore start
+	set({ "n", "x" }, "y", "<Plug>(YankyYank)", { desc = "Yank Text" })
+	set({ "n", "x" }, "p", "<Plug>(YankyPutAfter)", { desc = "Put Text After Cursor" })
+	set({ "n", "x" }, "P", "<Plug>(YankyPutBefore)", { desc = "Put Text Before Cursor" })
+	set({ "n", "x" }, "gp", "<Plug>(YankyGPutAfter)", { desc = "Put Text After Selection" })
+	set({ "n", "x" }, "gP", "<Plug>(YankyGPutBefore)", { desc = "Put Text Before Selection" })
+	set("n", "[y", "<Plug>(YankyCycleForward)", { desc = "Cycle Forward Through Yank History" })
+	set("n", "]y", "<Plug>(YankyCycleBackward)", { desc = "Cycle Backward Through Yank History" })
+	set("n", "]p", "<Plug>(YankyPutIndentAfterLinewise)", { desc = "Put Indented After Cursor (Linewise)" })
+	set("n", "[p", "<Plug>(YankyPutIndentBeforeLinewise)", { desc = "Put Indented Before Cursor (Linewise)" })
+	set("n", "]P", "<Plug>(YankyPutIndentAfterLinewise)", { desc = "Put Indented After Cursor (Linewise)" })
+	set("n", "[P", "<Plug>(YankyPutIndentBeforeLinewise)", { desc = "Put Indented Before Cursor (Linewise)" })
+	set("n", ">p", "<Plug>(YankyPutIndentAfterShiftRight)", { desc = "Put and Indent Right" })
+	set("n", "<p", "<Plug>(YankyPutIndentAfterShiftLeft)", { desc = "Put and Indent Left" })
+	set("n", ">P", "<Plug>(YankyPutIndentBeforeShiftRight)", { desc = "Put Before and Indent Right" })
+	set("n", "<P", "<Plug>(YankyPutIndentBeforeShiftLeft)", { desc = "Put Before and Indent Left" })
+	set("n", "=p", "<Plug>(YankyPutAfterFilter)", { desc = "Put After Applying a Filter" })
+	set("n", "=P", "<Plug>(YankyPutBeforeFilter)", { desc = "Put Before Applying a Filter" })
+  ---@diagnostic disable-next-line: undefined-field
+	set({ "n", "x" }, "<leader>p", function() Snacks.picker.yanky() end, { desc = "Open Yank History" })
+	-- stylua: ignore end
 
 	require("render-markdown").setup({
 		file_types = { "markdown" },

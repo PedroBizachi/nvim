@@ -265,6 +265,10 @@
     "workspace-diagnostics.nvim": {
       "rev": "a35321d8401878cc9558e357acfd0da58b582739",
       "src": "https://github.com/artemave/workspace-diagnostics.nvim"
+    },
+    "yanky.nvim": {
+      "rev": "4b4ddd196526fd3d6fd091d931810f9743e936d3",
+      "src": "https://github.com/gbprod/yanky.nvim"
     }
   }
 }
