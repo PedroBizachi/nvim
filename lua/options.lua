@@ -68,6 +68,8 @@ o.breakindent = true
 opt.scrolloff = 10
 opt.whichwrap:append("<>[]hl")
 o.list = true
+opt.spell = true
+opt.spelllang = { "pt_br", "en_us" }
 
 -- Style
 o.encoding = "utf-8"
